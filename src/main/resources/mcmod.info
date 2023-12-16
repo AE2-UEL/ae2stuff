@@ -1,20 +1,15 @@
-[
-{
-  "modid": "ae2stuff",
-  "name": "AE2 Stuff",
-  "description": "",
-  "version": "@AE2STUFF_VER@",
-  "url": "bdew.net",
-  "updateUrl": "",
+[{
+  "modid": "${modid}",
+  "name": "${modname}",
+  "description": "Stuff for AE2",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
   "authorList": [
+    "serenibyss",
     "bdew"
   ],
-  "credits": "",
-  "logoFile": "",
-  "screenshots": [
-  ],
-  "parent":"",
   "dependencies": [
+    "appliedenergistics2",
+    "bdlib"
   ]
-}
-]
+}]
