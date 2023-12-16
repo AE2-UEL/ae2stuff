@@ -122,6 +122,14 @@ class TileGrower extends TileDataSlots with GridTile with SidedInventory with Pe
 
   override def shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newSate: IBlockState): Boolean = newSate.getBlock != BlockGrower
 
-  onWake.listen(() => BlockGrower.setActive(world, pos, true))
-  onSleep.listen(() => BlockGrower.setActive(world, pos, false))
+  onWake.listen(() => {
+    if (world.isBlockLoaded(pos)) {
+      BlockGrower.setActive(world, pos, true)
+    }
+  })
+  onSleep.listen(() => {
+    if (world.isBlockLoaded(pos)) {
+      BlockGrower.setActive(world, pos, false)
+    }
+  })
 }

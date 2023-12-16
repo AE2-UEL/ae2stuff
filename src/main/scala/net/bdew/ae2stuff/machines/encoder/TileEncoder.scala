@@ -137,7 +137,9 @@ class TileEncoder extends TileExtended with GridTile with PersistentInventoryTil
 
   @MENetworkEventSubscribe
   def networkPowerStatusChange(ev: MENetworkPowerStatusChange): Unit = {
-    BlockEncoder.setActive(world, pos, node.isActive)
+    if (world.isBlockLoaded(pos)) {
+      BlockEncoder.setActive(world, pos, node.isActive)
+    }
   }
 
   override def shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newSate: IBlockState): Boolean = newSate.getBlock != BlockEncoder

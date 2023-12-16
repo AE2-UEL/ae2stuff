@@ -192,6 +192,14 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
 
   override def shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newSate: IBlockState): Boolean = newSate.getBlock != BlockInscriber
 
-  onWake.listen(() => BlockInscriber.setActive(world, pos, true))
-  onSleep.listen(() => BlockInscriber.setActive(world, pos, false))
+  onWake.listen(() => {
+    if (world.isBlockLoaded(pos)) {
+      BlockInscriber.setActive(world, pos, true)
+    }
+  })
+  onSleep.listen(() => {
+    if (world.isBlockLoaded(pos)) {
+      BlockInscriber.setActive(world, pos, false)
+    }
+  })
 }
