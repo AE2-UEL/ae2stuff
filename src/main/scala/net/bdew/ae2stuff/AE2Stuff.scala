@@ -42,12 +42,21 @@ import net.minecraftforge.fml.common.network.NetworkRegistry
 import net.minecraftforge.fml.relauncher.Side
 import org.apache.logging.log4j.Logger
 
-@Mod(modid = AE2Stuff.modId, version = "AE2STUFF_VER", name = "AE2 Stuff", dependencies = "required-after:appliedenergistics2;required-after:bdlib@[BDLIB_VER,)", acceptedMinecraftVersions = "[1.12,1.12.2]", modLanguage = "scala")
+@Mod(
+  modid = AE2Stuff.modId,
+  version = AE2Stuff.modVersion,
+  name = AE2Stuff.modName,
+  dependencies = "required-after:appliedenergistics2;required-after:bdlib@[BDLIB_VER,)",
+  acceptedMinecraftVersions = "[1.12,1.12.2]",
+  modLanguage = "scala")
 object AE2Stuff {
   var log: Logger = null
   var instance = this
 
-  final val modId = "ae2stuff"
+  final val modId = AE2StuffTags.MODID
+  final val modName = AE2StuffTags.MODNAME
+  final val modVersion = AE2StuffTags.VERSION
+
   final val channel = "bdew.ae2stuff"
 
   var configDir: File = null

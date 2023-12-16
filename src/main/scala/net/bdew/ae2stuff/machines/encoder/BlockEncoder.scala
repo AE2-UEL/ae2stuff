@@ -45,7 +45,7 @@ object BlockEncoder extends BaseBlock("encoder", MachineMaterial) with HasTE[Til
 
   override def getStateFromMeta(meta: Int) =
     getDefaultState
-      .withProperty(Properties.FACING, EnumFacing.getFront(meta & 7))
+      .withProperty(Properties.FACING, EnumFacing.byIndex(meta & 7))
       .withProperty(BlockActiveTexture.Active, Boolean.box((meta & 8) > 0))
 
   override def getMetaFromState(state: IBlockState) = {
