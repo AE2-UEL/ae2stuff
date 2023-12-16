@@ -157,12 +157,29 @@ class TileWireless extends TileDataSlots
     }
     val colorIdx = t.getShort("Color").toInt
     this.color = AEColor.values().apply(colorIdx)
+    if (hasWorld) {
+      scheduleRenderUpdate()
+    }
   }
 
   override def recolourBlock(enumFacing: EnumFacing, aeColor: AEColor, entityPlayer: EntityPlayer): Boolean = {
-    this.color = color
-    this.getGridNode(AEPartLocation.fromFacing(enumFacing)).updateState()
+    if (this.color == aeColor) {
+      return false
+    }
+    this.color = aeColor
+    if (getGridNode(AEPartLocation.fromFacing(enumFacing)) != null) {
+      getGridNode(AEPartLocation.fromFacing(enumFacing)).updateState()
+      scheduleRenderUpdate()
+      markDirty()
+    }
     true
+  }
+
+  private def scheduleRenderUpdate(): Unit = {
+    world.markBlockRangeForRenderUpdate(
+      pos.getX - 1, pos.getY - 1, pos.getZ - 1,
+      pos.getX + 1, pos.getY + 1, pos.getZ + 1
+    )
   }
 
   override def getActionableNode: IGridNode = this.node

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:cube_all",
+  "textures": {
+    "all": "ae2stuff:blocks/wireless/side_on_brown"
+  }
+}

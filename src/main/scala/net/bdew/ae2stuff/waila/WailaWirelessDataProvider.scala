@@ -53,7 +53,7 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
         "color" -> te.color.ordinal()
       )) getOrElse NBT(
         "connected" -> false,
-        "name" -> te.customName,
+        "name" -> (if (te.customName != null) te.customName else ""),
         "color" -> te.color.ordinal()
       )
     )

@@ -27,14 +27,14 @@
 package net.bdew.ae2stuff
 
 import java.io.File
-
 import net.bdew.ae2stuff.compat.WrenchRegistry
 import net.bdew.ae2stuff.items.visualiser.{VisualiserOverlayRender, VisualiserPlayerTracker}
-import net.bdew.ae2stuff.machines.wireless.WirelessOverlayRender
+import net.bdew.ae2stuff.machines.wireless.{WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
 import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
 import net.bdew.ae2stuff.network.NetHandler
 import net.bdew.lib.Event
 import net.bdew.lib.gui.GuiHandler
+import net.minecraftforge.client.model.ModelLoaderRegistry
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event._
@@ -79,6 +79,7 @@ object AE2Stuff {
     Items.load()
     if (event.getSide == Side.CLIENT) {
       Icons.init()
+      ModelLoaderRegistry.registerLoader(new WirelessModelLoader(Map("models/block/builtin/wireless" -> new WirelessModelFactory())))
     }
   }
 

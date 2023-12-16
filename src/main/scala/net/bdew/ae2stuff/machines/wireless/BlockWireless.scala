@@ -26,18 +26,25 @@
 
 package net.bdew.ae2stuff.machines.wireless
 
-import appeng.core.AppEng
+import appeng.api.util.{AEColor, AEPartLocation}
 import appeng.core.sync.GuiBridge
 import appeng.items.tools.quartz.ToolQuartzCuttingKnife
+import appeng.util.Platform
+import net.bdew.ae2stuff.machines.wireless.BlockWirelessProperties.COLOR_PROPERTY
 import net.bdew.ae2stuff.misc.{BlockActiveTexture, BlockWrenchable, MachineMaterial}
 import net.bdew.lib.block.{BaseBlock, HasTE}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemStack
+import net.minecraft.item.{EnumDyeColor, ItemStack}
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{EnumFacing, EnumHand}
-import net.minecraft.world.World
+import net.minecraft.world.{IBlockAccess, World}
+import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}
+
+object BlockWirelessProperties {
+  val COLOR_PROPERTY = new WirelessColorProperty("wireless_color_property")
+}
 
 object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[TileWireless] with BlockWrenchable with BlockActiveTexture {
   override val TEClass = classOf[TileWireless]
@@ -59,11 +66,9 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
     if (item != ItemStack.EMPTY && item.getItem.isInstanceOf[ToolQuartzCuttingKnife]) {
       val te = world.getTileEntity(pos)
       if (te.isInstanceOf[TileWireless]) {
-        player.openGui(
-          AppEng.instance(),
-          (GuiBridge.GUI_RENAMER.ordinal() << 5) | side.ordinal(),
-          world, pos.getX, pos.getY, pos.getZ
-        )
+        if (Platform.isServer) {
+          Platform.openGUI(player, te, AEPartLocation.fromFacing(side), GuiBridge.GUI_RENAMER)
+        }
       }
       return true
     }
@@ -84,5 +89,23 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
         te.customName = stack.getDisplayName
       }
     }
+  }
+
+  override def getUnlistedProperties: List[IUnlistedProperty[_]] = super.getUnlistedProperties :+ COLOR_PROPERTY
+
+  override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos): IBlockState = {
+    val te = getTE(world, pos)
+    if (te.isEmpty) return state
+    super.getExtendedState(state, world, pos).asInstanceOf[IExtendedBlockState]
+      .withProperty(COLOR_PROPERTY, te.get.color)
+  }
+
+  override def recolorBlock(world: World, pos: BlockPos, side: EnumFacing, color: EnumDyeColor): Boolean = {
+    val te = getTE(world, pos)
+    if (te != null) {
+      val aeColor = if (color != null) AEColor.values()(color.ordinal()) else AEColor.TRANSPARENT
+      return te.recolourBlock(side, aeColor, null)
+    }
+    false
   }
 }
