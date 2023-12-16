@@ -26,6 +26,7 @@
 
 package net.bdew.ae2stuff.waila
 
+import appeng.api.config.PowerMultiplier
 import mcp.mobius.waila.api.{IWailaConfigHandler, IWailaDataAccessor}
 import net.bdew.ae2stuff.machines.wireless.TileWireless
 import net.bdew.lib.PimpVanilla._
@@ -44,7 +45,7 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
         "connected" -> true,
         "target" -> link,
         "channels" -> (if (te.connection != null) te.connection.getUsedChannels else 0),
-        "power" -> te.getIdlePowerUsage
+        "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage)
       )) getOrElse NBT("connected" -> false)
     )
     tag
