@@ -41,13 +41,15 @@ import net.minecraft.world.World
 
 object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless]) {
   override def getNBTTag(player: EntityPlayerMP, te: TileWireless, tag: NBTTagCompound, world: World, pos: BlockPos): NBTTagCompound = {
+
+
     tag.setTag("wireless_waila",
       te.link map (link => NBT(
         "connected" -> true,
         "target" -> link,
         "channels" -> (if (te.connection != null) te.connection.getUsedChannels else 0),
         "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage),
-        "name" -> te.customName,
+        "name" -> (if (te.customName != null) te.customName else ""),
         "color" -> te.color.ordinal()
       )) getOrElse NBT(
         "connected" -> false,

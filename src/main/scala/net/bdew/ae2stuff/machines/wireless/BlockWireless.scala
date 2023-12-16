@@ -26,6 +26,8 @@
 
 package net.bdew.ae2stuff.machines.wireless
 
+import appeng.core.AppEng
+import appeng.core.sync.GuiBridge
 import appeng.items.tools.quartz.ToolQuartzCuttingKnife
 import net.bdew.ae2stuff.misc.{BlockActiveTexture, BlockWrenchable, MachineMaterial}
 import net.bdew.lib.block.{BaseBlock, HasTE}
@@ -55,9 +57,15 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
                                    ): Boolean = {
     val item = player.getHeldItem(hand)
     if (item != ItemStack.EMPTY && item.getItem.isInstanceOf[ToolQuartzCuttingKnife]) {
-      if (!world.isRemote) {
-        return true
+      val te = world.getTileEntity(pos)
+      if (te.isInstanceOf[TileWireless]) {
+        player.openGui(
+          AppEng.instance(),
+          (GuiBridge.GUI_RENAMER.ordinal() << 5) | side.ordinal(),
+          world, pos.getX, pos.getY, pos.getZ
+        )
       }
+      return true
     }
     false
   }
