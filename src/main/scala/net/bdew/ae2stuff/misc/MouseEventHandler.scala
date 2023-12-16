@@ -34,6 +34,8 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MouseEventHandler {
+  private val VISUALIZATION_MODES = VisualisationModes.values.toList
+
   def init() {
     MinecraftForge.EVENT_BUS.register(this)
   }
@@ -49,9 +51,9 @@ object MouseEventHandler {
     if (stack.getItem == ItemVisualiser) {
       val newMode =
         if (ev.getDwheel.signum > 0)
-          Misc.nextInSeq(VisualisationModes.modes, ItemVisualiser.getMode(stack))
+          Misc.nextInSeq(VISUALIZATION_MODES, ItemVisualiser.getMode(stack))
         else
-          Misc.prevInSeq(VisualisationModes.modes, ItemVisualiser.getMode(stack))
+          Misc.prevInSeq(VISUALIZATION_MODES, ItemVisualiser.getMode(stack))
       ItemVisualiser.setMode(stack, newMode)
       VisualiserOverlayRender.needListRefresh = true
       NetHandler.sendToServer(MsgVisualisationMode(newMode))

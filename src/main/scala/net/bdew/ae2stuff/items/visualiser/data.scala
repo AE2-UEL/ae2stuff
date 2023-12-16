@@ -98,5 +98,4 @@ object VisualisationData {
 
 object VisualisationModes extends Enumeration {
   val FULL, NODES, CHANNELS, NONUM, P2P = Value
-  val modes = List(FULL, NODES, CHANNELS, NONUM, P2P)
 }
