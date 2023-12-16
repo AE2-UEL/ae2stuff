@@ -30,7 +30,7 @@ import java.util
 import appeng.api.AEApi
 import appeng.api.implementations.tiles.IColorableTile
 import appeng.api.networking.{GridFlags, IGridConnection}
-import appeng.api.util.AEColor
+import appeng.api.util.{AEColor, AEPartLocation}
 import net.bdew.ae2stuff.AE2Stuff
 import net.bdew.ae2stuff.grid.{GridTile, VariableIdlePower}
 import net.bdew.lib.PimpVanilla._
@@ -153,10 +153,10 @@ class TileWireless extends TileDataSlots with GridTile with VariableIdlePower wi
 
   override def recolourBlock(enumFacing: EnumFacing, aeColor: AEColor, entityPlayer: EntityPlayer): Boolean = {
     this.color = color
+    this.getGridNode(AEPartLocation.fromFacing(enumFacing)).updateState()
     true
   }
 
-  override def getConnectableSides: util.EnumSet[EnumFacing] = super.getConnectableSides
   override def getColor: AEColor = color
   override def getGridColor: AEColor = color
 }
