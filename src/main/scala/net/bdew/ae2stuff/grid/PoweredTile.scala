@@ -48,7 +48,7 @@ trait PoweredTile extends TileDataSlots with GridTile with SleepableTile with IA
       } else if (powerStored / powerCapacity < 0.5D) {
         val net = node.getGrid.getCache[IEnergyGrid](classOf[IEnergyGrid])
         if (net.getStoredPower / net.getMaxStoredPower > 0.2) {
-          val drawn = net.extractAEPower(Misc.min(powerCapacity - powerStored, net.getMaxStoredPower * 0.1), Actionable.MODULATE, PowerMultiplier.CONFIG)
+          val drawn = net.extractAEPower(powerCapacity - powerStored, Actionable.MODULATE, PowerMultiplier.CONFIG)
           if (drawn > 0) {
             powerStored += drawn
             wakeup()
