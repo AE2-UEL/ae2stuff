@@ -27,26 +27,33 @@
 package net.bdew.ae2stuff.machines.wireless
 
 import java.util
-
 import appeng.api.AEApi
+import appeng.api.implementations.tiles.IColorableTile
 import appeng.api.networking.{GridFlags, IGridConnection}
+import appeng.api.util.AEColor
 import net.bdew.ae2stuff.AE2Stuff
 import net.bdew.ae2stuff.grid.{GridTile, VariableIdlePower}
 import net.bdew.lib.PimpVanilla._
 import net.bdew.lib.data.base.{TileDataSlots, UpdateKind}
 import net.bdew.lib.multiblock.data.DataSlotPos
 import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-class TileWireless extends TileDataSlots with GridTile with VariableIdlePower {
+class TileWireless extends TileDataSlots with GridTile with VariableIdlePower with IColorableTile {
+
   val cfg = MachineWireless
 
   val link = DataSlotPos("link", this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
 
   var connection: IGridConnection = null
 
+  var customName: String = ""
+  var color: AEColor = AEColor.TRANSPARENT
   def isLinked = link.isDefined
   def getLink = link flatMap world.getTileSafe[TileWireless]
 
@@ -61,6 +68,7 @@ class TileWireless extends TileDataSlots with GridTile with VariableIdlePower {
   def doLink(other: TileWireless): Boolean = {
     if (other.link.isEmpty) {
       other.link.set(pos)
+      this.customName = other.customName
       link.set(other.getPos)
       setupConnection()
     } else false
@@ -123,4 +131,32 @@ class TileWireless extends TileDataSlots with GridTile with VariableIdlePower {
   override def getMachineRepresentation: ItemStack = new ItemStack(BlockWireless)
 
   override def shouldRefresh(world: World, pos: BlockPos, oldState: IBlockState, newSate: IBlockState): Boolean = newSate.getBlock != BlockWireless
+
+  override def doSave(kind: UpdateKind.Value, t: NBTTagCompound): Unit = {
+    super.doSave(kind, t)
+    if (customName != "") {
+      t.setString("CustomName", customName)
+    }
+    t.setString("CustomName", customName)
+    t.setShort("Color", color.ordinal().toShort)
+  }
+
+  override def doLoad(kind: UpdateKind.Value, t: NBTTagCompound): Unit = {
+    super.doLoad(kind, t)
+    this.customName = t.getString("CustomName")
+    if (!t.hasKey("Color")) {
+      t.setShort("Color", AEColor.TRANSPARENT.ordinal().toShort)
+    }
+    val colorIdx = t.getShort("Color").toInt
+    this.color = AEColor.values().apply(colorIdx)
+  }
+
+  override def recolourBlock(enumFacing: EnumFacing, aeColor: AEColor, entityPlayer: EntityPlayer): Boolean = {
+    this.color = color
+    true
+  }
+
+  override def getConnectableSides: util.EnumSet[EnumFacing] = super.getConnectableSides
+  override def getColor: AEColor = color
+  override def getGridColor: AEColor = color
 }

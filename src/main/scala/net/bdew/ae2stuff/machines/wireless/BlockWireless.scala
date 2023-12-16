@@ -26,6 +26,7 @@
 
 package net.bdew.ae2stuff.machines.wireless
 
+import appeng.items.tools.quartz.ToolQuartzCuttingKnife
 import net.bdew.ae2stuff.misc.{BlockActiveTexture, BlockWrenchable, MachineMaterial}
 import net.bdew.lib.block.{BaseBlock, HasTE}
 import net.minecraft.block.state.IBlockState
@@ -41,7 +42,25 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
 
   setHardness(1)
 
-  override def onBlockActivatedReal(world: World, pos: BlockPos, state: IBlockState, player: EntityPlayer, hand: EnumHand, heldItem: ItemStack, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean = false
+  override def onBlockActivatedReal(world: World,
+                                    pos: BlockPos,
+                                    state: IBlockState,
+                                    player: EntityPlayer,
+                                    hand: EnumHand,
+                                    heldItem: ItemStack,
+                                    side: EnumFacing,
+                                    hitX: Float,
+                                    hitY: Float,
+                                    hitZ: Float
+                                   ): Boolean = {
+    val item = player.getHeldItem(hand)
+    if (item != ItemStack.EMPTY && item.getItem.isInstanceOf[ToolQuartzCuttingKnife]) {
+      if (!world.isRemote) {
+        return true
+      }
+    }
+    false
+  }
 
   override def breakBlock(world: World, pos: BlockPos, state: IBlockState): Unit = {
     getTE(world, pos).doUnlink()
@@ -50,7 +69,12 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
 
   override def onBlockPlacedBy(world: World, pos: BlockPos, state: IBlockState, placer: EntityLivingBase, stack: ItemStack): Unit = {
     super.onBlockPlacedBy(world, pos, state, placer, stack)
-    if (placer.isInstanceOf[EntityPlayer])
-      getTE(world, pos).placingPlayer = placer.asInstanceOf[EntityPlayer]
+    if (placer.isInstanceOf[EntityPlayer]) {
+      val te = getTE(world, pos)
+      te.placingPlayer = placer.asInstanceOf[EntityPlayer]
+      if (stack != ItemStack.EMPTY && stack.hasDisplayName) {
+        te.customName = stack.getDisplayName
+      }
+    }
   }
 }

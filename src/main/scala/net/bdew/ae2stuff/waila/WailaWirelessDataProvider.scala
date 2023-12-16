@@ -27,6 +27,7 @@
 package net.bdew.ae2stuff.waila
 
 import appeng.api.config.PowerMultiplier
+import appeng.api.util.AEColor
 import mcp.mobius.waila.api.{IWailaConfigHandler, IWailaDataAccessor}
 import net.bdew.ae2stuff.machines.wireless.TileWireless
 import net.bdew.lib.PimpVanilla._
@@ -45,8 +46,14 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
         "connected" -> true,
         "target" -> link,
         "channels" -> (if (te.connection != null) te.connection.getUsedChannels else 0),
-        "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage)
-      )) getOrElse NBT("connected" -> false)
+        "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage),
+        "name" -> te.customName,
+        "color" -> te.color.ordinal()
+      )) getOrElse NBT(
+        "connected" -> false,
+        "name" -> te.customName,
+        "color" -> te.color.ordinal()
+      )
     )
     tag
   }
@@ -54,6 +61,8 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
   override def getBodyStrings(target: TileWireless, stack: ItemStack, acc: IWailaDataAccessor, cfg: IWailaConfigHandler): Iterable[String] = {
     if (acc.getNBTData.hasKey("wireless_waila")) {
       val data = acc.getNBTData.getCompoundTag("wireless_waila")
+      val name = data.getString("name")
+      val color = data.getInteger("color")
       if (data.getBoolean("connected")) {
         data.get[BlockPos]("target") map { pos =>
           List(
@@ -61,9 +70,21 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
             Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
             Misc.toLocalF("ae2stuff.waila.wireless.power", DecFormat.short(data.getDouble("power")))
           )
+            .++(if (name != "") {
+              Misc.toLocalF("ae2stuff.waila.wireless.name", name) :: Nil
+            } else Nil)
+            .++(if (color != AEColor.TRANSPARENT.ordinal()) {
+              Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
+            } else Nil)
         } getOrElse List(Misc.toLocal("ae2stuff.waila.wireless.notconnected"))
       } else {
         List(Misc.toLocal("ae2stuff.waila.wireless.notconnected"))
+          .++(if (name != "") {
+            Misc.toLocalF("ae2stuff.waila.wireless.name", name) :: Nil
+          } else Nil)
+          .++(if (color != AEColor.TRANSPARENT.ordinal()) {
+            Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
+          } else Nil)
       }
     } else List.empty
   }

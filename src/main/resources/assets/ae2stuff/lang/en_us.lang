@@ -16,6 +16,7 @@ ae2stuff.waila.wireless.connected=Connected to %s,%s,%s
 ae2stuff.waila.wireless.notconnected=Not Connected
 ae2stuff.waila.wireless.channels=Channels: %s
 ae2stuff.waila.wireless.power=Power Used: %s AE/t
+ae2stuff.waila.wireless.name=Name: %s
 
 ae2stuff.gui.lock.on=Locked - Can't be removed with automation
 ae2stuff.gui.lock.off=Unlocked - Can be removed with automation
