@@ -1,7 +1,7 @@
 [{
   "modid": "${modid}",
   "name": "${modname}",
-  "description": "Stuff for AE2",
+  "description": "Stuff for AE2, now maybe a little bit improved",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "authorList": [

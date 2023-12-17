@@ -22,9 +22,13 @@
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    // TODO Remove, but also update to 1.14.4.1 (4675629)
-    implementation rfg.deobf("curse.maven:bdlib-70496:2489984")
-    implementation rfg.deobf("curse.maven:ae2-extended-life-570458:4402048") // AE2UEL 0.55.6
+    implementation rfg.deobf("curse.maven:bdlib-70496:4675629") // BdLib 1.14.4.1
+    implementation rfg.deobf("curse.maven:ae2-extended-life-570458:4961400") // AE2UEL 0.55.29
 
     implementation rfg.deobf("curse.maven:hwyla-253449:2568751") // HWYLA 1.8.26-B41
+}
+
+minecraft {
+    injectedTags.put('BDLIB_VERSION', '1.14.4.1')
+    injectedTags.put('AE2_VERSION', 'rv6-stable-7-extended_life-v0.55.29')
 }

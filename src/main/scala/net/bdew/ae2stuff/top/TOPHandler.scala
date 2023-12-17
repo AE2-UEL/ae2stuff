@@ -15,7 +15,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
 
-object BaseInfoProvider extends IProbeInfoProvider {
+object TOPHandler extends IProbeInfoProvider {
 
   def init(): Unit = {
     val oneProbe = TheOneProbe.theOneProbeImp

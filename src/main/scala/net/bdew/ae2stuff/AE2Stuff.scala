@@ -32,7 +32,7 @@ import net.bdew.ae2stuff.items.visualiser.{VisualiserOverlayRender, VisualiserPl
 import net.bdew.ae2stuff.machines.wireless.{WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
 import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
 import net.bdew.ae2stuff.network.NetHandler
-import net.bdew.ae2stuff.top.BaseInfoProvider
+import net.bdew.ae2stuff.top.TOPHandler
 import net.bdew.lib.Event
 import net.bdew.lib.gui.GuiHandler
 import net.minecraftforge.client.model.ModelLoaderRegistry
@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger
   modid = AE2Stuff.modId,
   version = AE2Stuff.modVersion,
   name = AE2Stuff.modName,
-  dependencies = "required-after:appliedenergistics2;required-after:bdlib@[BDLIB_VER,)",
+  dependencies = AE2Stuff.modDependencies,
   acceptedMinecraftVersions = "[1.12,1.12.2]",
   modLanguage = "scala")
 object AE2Stuff {
@@ -56,7 +56,11 @@ object AE2Stuff {
 
   final val modId = AE2StuffTags.MODID
   final val modName = AE2StuffTags.MODNAME
+
   final val modVersion = AE2StuffTags.VERSION
+  private final val ae2Version = "required-after:appliedenergistics2@[" + AE2StuffTags.AE2_VERSION + ",)"
+  private final val bdLibVersion = "required-after:bdlib@[" + AE2StuffTags.BDLIB_VERSION + ",)"
+  final val modDependencies = ae2Version + ";" + bdLibVersion
 
   final val channel = "bdew.ae2stuff"
 
@@ -104,7 +108,7 @@ object AE2Stuff {
 
   @Optional.Method(modid = "theoneprobe")
   private def initTOP(): Unit = {
-    BaseInfoProvider.init()
+    TOPHandler.init()
   }
 
   val onPostInit = Event[FMLPostInitializationEvent]
