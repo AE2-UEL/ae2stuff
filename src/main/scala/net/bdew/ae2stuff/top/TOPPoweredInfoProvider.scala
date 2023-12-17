@@ -1,12 +1,12 @@
 package net.bdew.ae2stuff.top
+
 import appeng.integration.modules.theoneprobe.TheOneProbeText
 import appeng.util.Platform
-import mcjty.theoneprobe.api.{IProbeHitData, IProbeInfo, ProbeMode, TextStyleClass}
+import mcjty.theoneprobe.api.{IProbeHitData, IProbeInfo, ProbeMode}
 import net.bdew.ae2stuff.grid.PoweredTile
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
 
 object TOPPoweredInfoProvider extends TOPTileProvider {
@@ -25,12 +25,10 @@ object TOPPoweredInfoProvider extends TOPTileProvider {
         val formattedString = String.format(TheOneProbeText.STORED_ENERGY.getLocal, formatCurrentPower, formatMaxPower)
         probeInfo.text(formattedString)
 
-        if (poweredTile.isSleeping) {
-          probeInfo.text(TextStyleClass.INFO + TextFormatting.RED.toString +
-            "{*ae2stuff.waila.sleep.true*}")
+        if (poweredTile.node != null && poweredTile.node.isActive) {
+          probeInfo.text(TheOneProbeText.DEVICE_ONLINE.getLocal)
         } else {
-          probeInfo.text(TextStyleClass.INFO + TextFormatting.RED.toString +
-            "{*ae2stuff.waila.sleep.false*}")
+          probeInfo.text(TheOneProbeText.DEVICE_OFFLINE.getLocal)
         }
       case _ =>
     }

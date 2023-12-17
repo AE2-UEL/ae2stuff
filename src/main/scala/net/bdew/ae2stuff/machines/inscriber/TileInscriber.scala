@@ -226,16 +226,6 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
 
   private def isNamePress(stack: ItemStack): Boolean = AEApi.instance().definitions().materials().namePress().isSameAs(stack)
 
-  private def ensureNoMatch(stack: ItemStack, otherA: ItemStack, otherB: ItemStack): Boolean = {
-    if (Platform.itemComparisons().isSameItem(stack, otherA)) {
-      return false
-    }
-    if (Platform.itemComparisons().isSameItem(stack, otherB)) {
-      return false
-    }
-    true
-  }
-
   override def canExtractItem(slot: Int, stack: ItemStack, side: EnumFacing): Boolean = slot match {
     case slots.output => true
     case slots.top => (!topLocked) && (!output.isDefined) && inv(slots.middle).isEmpty

@@ -26,14 +26,14 @@
 
 package net.bdew.ae2stuff.waila
 
+import appeng.core.localization.WailaText
+import appeng.util.Platform
 import mcp.mobius.waila.api.{IWailaConfigHandler, IWailaDataAccessor}
 import net.bdew.ae2stuff.grid.PoweredTile
-import net.bdew.lib.{DecFormat, Misc}
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.text.TextFormatting
 import net.minecraft.world.World
 
 object WailaPoweredDataProvider extends BaseDataProvider(classOf[PoweredTile]) {
@@ -48,11 +48,14 @@ object WailaPoweredDataProvider extends BaseDataProvider(classOf[PoweredTile]) {
     val nbt = acc.getNBTData
     if (nbt.hasKey("waila_power_stored")) {
       List(
-        Misc.toLocalF("ae2stuff.waila.power", DecFormat.short(nbt.getDouble("waila_power_stored")), DecFormat.short(nbt.getDouble("waila_power_capacity"))),
-        if (nbt.getBoolean("waila_power_sleep"))
-          TextFormatting.RED + Misc.toLocal("ae2stuff.waila.sleep.true") + TextFormatting.RESET
-        else
-          TextFormatting.GREEN + Misc.toLocal("ae2stuff.waila.sleep.false") + TextFormatting.RESET
+        WailaText.Contains.getLocal + ": " +
+          Platform.formatPowerLong(nbt.getDouble("waila_power_stored").toLong, false)
+          + " / " + Platform.formatPowerLong(nbt.getDouble("waila_power_capacity").toLong, false),
+        if (nbt.getBoolean("waila_power_sleep")) {
+          WailaText.DeviceOffline.getLocal
+        } else {
+          WailaText.DeviceOnline.getLocal
+        }
       )
     } else List.empty
   }
