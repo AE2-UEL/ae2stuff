@@ -33,7 +33,6 @@ class WirelessBakedModel(format: VertexFormat, colorMap: Map[AEColor, TextureAtl
 
     val ext = state.asInstanceOf[IExtendedBlockState]
     var key = ext.getValue(BlockWirelessProperties.COLOR_PROPERTY)
-    System.out.println(key)
     if (key == null) key = AEColor.TRANSPARENT
     quadMap(key)
   }

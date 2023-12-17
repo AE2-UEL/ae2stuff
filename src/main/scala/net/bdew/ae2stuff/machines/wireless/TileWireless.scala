@@ -169,6 +169,8 @@ class TileWireless extends TileDataSlots
     this.color = aeColor
     if (getGridNode(AEPartLocation.fromFacing(enumFacing)) != null) {
       getGridNode(AEPartLocation.fromFacing(enumFacing)).updateState()
+      val state = getBlockType.getStateFromMeta(getBlockMetadata)
+      world.notifyBlockUpdate(pos, state, state, 0)
       scheduleRenderUpdate()
       markDirty()
     }
