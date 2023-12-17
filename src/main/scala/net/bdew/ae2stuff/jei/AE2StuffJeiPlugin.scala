@@ -28,10 +28,14 @@ package net.bdew.ae2stuff.jei
 
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid
 import mezz.jei.api.{IModPlugin, IModRegistry, JEIPlugin}
+import net.bdew.ae2stuff.machines.inscriber.BlockInscriber
+import net.minecraft.item.ItemStack
 
 @JEIPlugin
 class AE2StuffJeiPlugin extends IModPlugin {
   override def register(registry: IModRegistry): Unit = {
     registry.getRecipeTransferRegistry.addRecipeTransferHandler(EncoderTransferHandler, VanillaRecipeCategoryUid.CRAFTING)
+
+    registry.addRecipeCatalyst(new ItemStack(BlockInscriber), "appliedenergistics2.inscriber")
   }
 }
