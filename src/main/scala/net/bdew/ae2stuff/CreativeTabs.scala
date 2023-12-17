@@ -26,10 +26,10 @@
 
 package net.bdew.ae2stuff
 
-import net.bdew.ae2stuff.machines.encoder.BlockEncoder
+import net.bdew.ae2stuff.machines.wireless.BlockWireless
 import net.bdew.lib.CreativeTabContainer
 import net.minecraft.item.ItemStack
 
 object CreativeTabs extends CreativeTabContainer {
-  val main = new Tab("bdew.ae2stuff", new ItemStack(BlockEncoder))
+  val main = new Tab("bdew.ae2stuff", new ItemStack(BlockWireless))
 }
