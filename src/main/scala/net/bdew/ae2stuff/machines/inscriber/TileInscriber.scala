@@ -30,6 +30,8 @@ import appeng.api.AEApi
 import appeng.api.config.Upgrades
 import appeng.api.features.{IInscriberRecipe, InscriberProcessType}
 import appeng.api.networking.GridNotification
+import appeng.util.Platform
+import com.google.common.collect.Lists
 import net.bdew.ae2stuff.grid.{GridTile, PoweredTile}
 import net.bdew.ae2stuff.misc.UpgradeInventory
 import net.bdew.lib.PimpVanilla._
@@ -46,9 +48,10 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 class TileInscriber extends TileDataSlots with GridTile with SidedInventory with PersistentInventoryTile with PoweredTile with TileKeepData {
-  override def getSizeInventory = 4
-  override def getMachineRepresentation = new ItemStack(BlockInscriber)
-  override def powerCapacity = MachineInscriber.powerCapacity
+
+  override def getSizeInventory: Int = 4
+  override def getMachineRepresentation: ItemStack = new ItemStack(BlockInscriber)
+  override def powerCapacity: Double = MachineInscriber.powerCapacity
 
   object slots {
     val top = 0
@@ -70,7 +73,7 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
     if (!tag.hasKey("bottomLocked")) bottomLocked := true
   })
 
-  def isWorking = output.isDefined
+  private def isWorking = output.isDefined
 
   serverTick.listen(() => {
     if (isAwake) {
@@ -85,6 +88,29 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
             decrStackSize(slots.bottom, 1)
           }
         }
+        if (!isWorking) { // Failed - try name mold now
+          val plateA = inv(slots.top)
+          val plateB = inv(slots.bottom)
+          val input = inv(slots.middle)
+
+          if (!input.isEmpty) {
+            val namePress = AEApi.instance().definitions().materials().namePress()
+            val isNameA = namePress.isSameAs(plateA)
+            val isNameB = namePress.isSameAs(plateB)
+            var recipe: IInscriberRecipe = null
+            if ((isNameA && isNameB) || isNameA && plateB.isEmpty) {
+              recipe = makeNamePressRecipe(input, plateA, plateB)
+            } else if (plateA.isEmpty && isNameB) {
+              recipe = makeNamePressRecipe(input, plateB, plateA)
+            }
+            if (recipe != null) {
+              output.set(recipe.getOutput.copy())
+              progress := 0
+              decrStackSize(slots.middle, 1)
+            }
+          }
+        }
+
         if (!isWorking) // Failed - go sleep
           sleep()
       }
@@ -146,16 +172,16 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
 
   import scala.collection.JavaConversions._
 
-  def findFinalRecipe: Option[IInscriberRecipe] =
+  private def findFinalRecipe: Option[IInscriberRecipe] =
     AEApi.instance().registries().inscriber().getRecipes find isMatchingFullRecipe
 
-  def isMatchingFullRecipe(rec: IInscriberRecipe) =
+  private def isMatchingFullRecipe(rec: IInscriberRecipe) =
     !getStackInSlot(slots.middle).isEmpty &&
       ItemUtils.isSameItem(rec.getTopOptional.orElse(ItemStack.EMPTY), getStackInSlot(slots.top)) &&
       ItemUtils.isSameItem(rec.getBottomOptional.orElse(ItemStack.EMPTY), getStackInSlot(slots.bottom)) &&
       rec.getInputs.exists(rs => ItemUtils.isSameItem(rs, getStackInSlot(slots.middle)))
 
-  def isMatchingPartialRecipe(rec: IInscriberRecipe, top: Option[ItemStack], middle: Option[ItemStack], bottom: Option[ItemStack]): Boolean = {
+  private def isMatchingPartialRecipe(rec: IInscriberRecipe, top: Option[ItemStack], middle: Option[ItemStack], bottom: Option[ItemStack]): Boolean = {
     if (top.isDefined) {
       if (!rec.getTopOptional.isPresent) return false
       if (!ItemUtils.isSameItem(rec.getTopOptional.get(), top.get)) return false
@@ -170,20 +196,47 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
     true
   }
 
-  def isValidPartialRecipe(top: Option[ItemStack], middle: Option[ItemStack], bottom: Option[ItemStack]): Boolean = {
+  private def isValidPartialRecipe(top: Option[ItemStack], middle: Option[ItemStack], bottom: Option[ItemStack]): Boolean = {
     AEApi.instance().registries().inscriber().getRecipes.exists(rec => isMatchingPartialRecipe(rec, top, middle, bottom))
   }
 
-  def stackOption(s: ItemStack) = if (s.isEmpty) None else Some(s)
+  private def stackOption(s: ItemStack): Option[ItemStack] = if (s.isEmpty) None else Some(s)
 
-  override def isItemValidForSlot(slot: Int, stack: ItemStack) = slot match {
-    case slots.top => isValidPartialRecipe(Some(stack), stackOption(inv(slots.middle)), stackOption(inv(slots.bottom)))
-    case slots.middle => isValidPartialRecipe(stackOption(inv(slots.top)), Some(stack), stackOption(inv(slots.bottom)))
-    case slots.bottom => isValidPartialRecipe(stackOption(inv(slots.top)), stackOption(inv(slots.middle)), Some(stack))
+  override def isItemValidForSlot(slot: Int, stack: ItemStack): Boolean = slot match {
+    case slots.top =>
+      if (isNamePress(stack)) {
+        return true
+      }
+      isValidPartialRecipe(Some(stack), stackOption(inv(slots.middle)), stackOption(inv(slots.bottom)))
+
+    case slots.bottom =>
+      if (isNamePress(stack)) {
+        return true
+      }
+      isValidPartialRecipe(stackOption(inv(slots.top)), stackOption(inv(slots.middle)), Some(stack))
+
+    case slots.middle =>
+      if (isNamePress(inv(slots.top)) || isNamePress(inv(slots.bottom))) {
+        return true
+      }
+      isValidPartialRecipe(stackOption(inv(slots.top)), Some(stack), stackOption(inv(slots.bottom)))
+
     case _ => false
   }
 
-  override def canExtractItem(slot: Int, stack: ItemStack, side: EnumFacing) = slot match {
+  private def isNamePress(stack: ItemStack): Boolean = AEApi.instance().definitions().materials().namePress().isSameAs(stack)
+
+  private def ensureNoMatch(stack: ItemStack, otherA: ItemStack, otherB: ItemStack): Boolean = {
+    if (Platform.itemComparisons().isSameItem(stack, otherA)) {
+      return false
+    }
+    if (Platform.itemComparisons().isSameItem(stack, otherB)) {
+      return false
+    }
+    true
+  }
+
+  override def canExtractItem(slot: Int, stack: ItemStack, side: EnumFacing): Boolean = slot match {
     case slots.output => true
     case slots.top => (!topLocked) && (!output.isDefined) && inv(slots.middle).isEmpty
     case slots.bottom => (!bottomLocked) && (!output.isDefined) && inv(slots.middle).isEmpty
@@ -202,4 +255,47 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
       BlockInscriber.setActive(world, pos, false)
     }
   })
+
+  private def makeNamePressRecipe(input: ItemStack, plateA: ItemStack, plateB: ItemStack): IInscriberRecipe = {
+    var name = ""
+
+    if (!plateA.isEmpty) {
+      val tag = Platform.openNbtData(plateA)
+      name += tag.getString("InscribeName")
+    }
+
+    if (!plateB.isEmpty) {
+      val tag = Platform.openNbtData(plateB)
+      name += " " + tag.getString("InscribeName")
+    }
+
+    val startingItem = input.copy
+    val renamedItem = input.copy
+    val tag = Platform.openNbtData(renamedItem)
+
+    val display = tag.getCompoundTag("display")
+    tag.setTag("display", display)
+
+    if (name.nonEmpty) {
+      display.setString("Name", name)
+    } else {
+      display.removeTag("Name")
+    }
+
+    val inputs = Lists.newArrayList(startingItem)
+    val processType = InscriberProcessType.INSCRIBE
+
+    val builder = AEApi.instance().registries().inscriber().builder()
+    builder.withInputs(inputs).withOutput(renamedItem).withProcessType(processType)
+
+    if (!plateA.isEmpty) {
+      builder.withTopOptional(plateA)
+    }
+
+    if (!plateB.isEmpty) {
+      builder.withBottomOptional(plateB)
+    }
+
+    builder.build()
+  }
 }
