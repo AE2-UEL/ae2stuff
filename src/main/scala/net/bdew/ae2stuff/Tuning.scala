@@ -28,12 +28,13 @@ package net.bdew.ae2stuff
 
 import java.io.{File, FileWriter}
 import java.util.Optional
-
 import appeng.api.definitions.IItemDefinition
 import appeng.api.util.{AEColor, AEColoredItemDefinition}
 import net.bdew.lib.recipes.gencfg.{ConfigSection, GenericConfigLoader, GenericConfigParser}
 import net.bdew.lib.recipes.{RecipeLoader, RecipeParser, RecipesHelper, StackRef}
 import net.minecraft.item.ItemStack
+
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 object Tuning extends ConfigSection
 
@@ -66,7 +67,7 @@ object TuningLoader {
         error("Unable to resolve %s", name)
     }
 
-    override def getConcreteStack(s: StackRef, cnt: Int) = s match {
+    override def getConcreteStack(s: StackRef, cnt: Int): ItemStack = s match {
       case StackMaterial(name) =>
         getOptionalStack(AE2Defs.material(name).asInstanceOf[IItemDefinition].maybeStack(cnt), s.toString)
       case StackPart(name) =>
@@ -78,16 +79,14 @@ object TuningLoader {
     }
   }
 
-  def loadDelayed() = loader.processRecipeStatements()
+  def loadDelayed(): Unit = loader.processRecipeStatements()
 
-  def loadConfigFiles() {
+  def loadConfigFiles(): Unit = {
     if (!AE2Stuff.configDir.exists()) {
       AE2Stuff.configDir.mkdir()
-      val nl = System.getProperty("line.separator")
-      val f = new FileWriter(new File(AE2Stuff.configDir, "readme.txt"))
-      f.write("Any .cfg files in this directory will be loaded after the internal configuration, in alphabetic order" + nl)
-      f.write("Files in 'overrides' directory with matching names cab be used to override internal configuration" + nl)
-      f.close()
+      new File(AE2Stuff.configDir + "/overrides/").mkdir()
+      exportConfigFile("recipes.cfg")
+      exportConfigFile("tuning.cfg")
     }
 
     RecipesHelper.loadConfigs(
@@ -96,6 +95,11 @@ object TuningLoader {
       configDir = AE2Stuff.configDir,
       resBaseName = "/assets/ae2stuff/config/",
       loader = loader)
+  }
+
+  private def exportConfigFile(fileName: String): Unit = {
+    val is = getClass.getResourceAsStream("/assets/ae2stuff/config/" + fileName)
+    Files.copy(is, Paths.get(AE2Stuff.configDir + "/overrides/" + fileName), StandardCopyOption.REPLACE_EXISTING)
   }
 }
 
