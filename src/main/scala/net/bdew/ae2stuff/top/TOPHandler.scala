@@ -63,6 +63,7 @@ object TOPHandler extends IProbeInfoProvider {
       if (wireless.color != AEColor.TRANSPARENT) {
         probeInfo.text(getTextColor(wireless.color) + "{*" + wireless.color.unlocalizedName + "*}")
       }
+    case _ =>
   }
 
   private def getTextColor(aeColor: AEColor): String = (aeColor match {
