@@ -13,9 +13,12 @@ ae2stuff.waila.sleep.false=Dolgozik
 ae2stuff.waila.power=%s / %s AE
 
 ae2stuff.waila.wireless.connected=%s,%s,%s-hoz csatlakoztatva
+ae2stuff.top.wireless.connected=hoz csatlakoztatva
 ae2stuff.waila.wireless.notconnected=Nincs csatlakoztatva
 ae2stuff.waila.wireless.channels=Csatornák: %s
+ae2stuff.top.wireless.channels=Csatornák:
 ae2stuff.waila.wireless.power=Energia használva: %s AE/t
+ae2stuff.top.wireless.power=Energia használva:
 
 ae2stuff.gui.lock.on=Lezárva - Automatikusan nem lehet eltávolítani
 ae2stuff.gui.lock.off=Feloldva - Automatikusan el lehet távolítani

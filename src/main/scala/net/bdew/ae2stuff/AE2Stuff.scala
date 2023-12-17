@@ -32,10 +32,11 @@ import net.bdew.ae2stuff.items.visualiser.{VisualiserOverlayRender, VisualiserPl
 import net.bdew.ae2stuff.machines.wireless.{WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
 import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
 import net.bdew.ae2stuff.network.NetHandler
+import net.bdew.ae2stuff.top.BaseInfoProvider
 import net.bdew.lib.Event
 import net.bdew.lib.gui.GuiHandler
 import net.minecraftforge.client.model.ModelLoaderRegistry
-import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.{Loader, Mod, Optional}
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event._
 import net.minecraftforge.fml.common.network.NetworkRegistry
@@ -96,6 +97,14 @@ object AE2Stuff {
     WrenchRegistry.init()
     FMLInterModComms.sendMessage("waila", "register", "net.bdew.ae2stuff.waila.WailaHandler.loadCallback")
     TuningLoader.loadDelayed()
+    if (Loader.isModLoaded("theoneprobe")) {
+      initTOP()
+    }
+  }
+
+  @Optional.Method(modid = "theoneprobe")
+  private def initTOP(): Unit = {
+    BaseInfoProvider.init()
   }
 
   val onPostInit = Event[FMLPostInitializationEvent]

@@ -14,9 +14,12 @@ ae2stuff.waila.sleep.false=オンライン
 ae2stuff.waila.power=%s / %s AE
 
 ae2stuff.waila.wireless.connected=%s,%s,%s と接続中
+ae2stuff.top.wireless.connected=と接続中
 ae2stuff.waila.wireless.notconnected=未接続
 ae2stuff.waila.wireless.channels=チャンネル数: %s
+ae2stuff.top.wireless.channels=チャンネル数:
 ae2stuff.waila.wireless.power=消費パワー: %s AE/t
+ae2stuff.top.wireless.power=消費パワー:
 
 ae2stuff.gui.lock.on=ロック - 中身を維持します
 ae2stuff.gui.lock.off=アンロック - 中身を維持しません
