@@ -28,10 +28,8 @@ package net.bdew.ae2stuff.items.visualiser
 
 import java.util
 import java.util.Locale
-
 import appeng.api.networking.{GridFlags, IGridConnection, IGridHost}
 import appeng.api.util.AEPartLocation
-import com.mojang.realmsclient.gui.ChatFormatting
 import net.bdew.ae2stuff.misc.ItemLocationStore
 import net.bdew.ae2stuff.network.{MsgVisualisationData, MsgVisualisationMode, NetHandler}
 import net.bdew.lib.Misc
@@ -45,6 +43,7 @@ import net.minecraft.inventory.EntityEquipmentSlot
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.{EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
 
@@ -138,7 +137,7 @@ object ItemVisualiser extends BaseItem("visualiser") with ItemLocationStore {
     super.addInformation(stack, worldIn, tooltip, flagIn)
     tooltip.add("%s %s%s".format(
       Misc.toLocal("ae2stuff.visualiser.mode"),
-      ChatFormatting.YELLOW,
+      TextFormatting.YELLOW,
       Misc.toLocal("ae2stuff.visualiser.mode." + getMode(stack).toString.toLowerCase(Locale.US))
     ))
   }
