@@ -28,19 +28,15 @@ package net.bdew.ae2stuff
 
 import java.io.File
 import net.bdew.ae2stuff.compat.WrenchRegistry
-import net.bdew.ae2stuff.items.visualiser.{VisualiserOverlayRender, VisualiserPlayerTracker}
-import net.bdew.ae2stuff.machines.wireless.{WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
-import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
+import net.bdew.ae2stuff.items.visualiser.VisualiserPlayerTracker
 import net.bdew.ae2stuff.network.NetHandler
 import net.bdew.ae2stuff.top.TOPHandler
 import net.bdew.lib.Event
 import net.bdew.lib.gui.GuiHandler
-import net.minecraftforge.client.model.ModelLoaderRegistry
-import net.minecraftforge.fml.common.{Loader, Mod, Optional}
+import net.minecraftforge.fml.common.{Loader, Mod, Optional, SidedProxy}
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event._
 import net.minecraftforge.fml.common.network.NetworkRegistry
-import net.minecraftforge.fml.relauncher.Side
 import org.apache.logging.log4j.Logger
 
 @Mod(
@@ -68,6 +64,11 @@ object AE2Stuff {
 
   val guiHandler = new GuiHandler
 
+  @SidedProxy(
+    clientSide = "net.bdew.ae2stuff.ClientProxy",
+    serverSide = "net.bdew.ae2stuff.CommonProxy")
+  var proxy: CommonProxy = null
+
   def logDebug(msg: String, args: Any*) = log.debug(msg.format(args: _*))
   def logInfo(msg: String, args: Any*) = log.info(msg.format(args: _*))
   def logWarn(msg: String, args: Any*) = log.warn(msg.format(args: _*))
@@ -76,27 +77,20 @@ object AE2Stuff {
   def logErrorException(msg: String, t: Throwable, args: Any*) = log.error(msg.format(args: _*), t)
 
   @EventHandler
-  def preInit(event: FMLPreInitializationEvent) {
+  def preInit(event: FMLPreInitializationEvent): Unit = {
     log = event.getModLog
     configDir = new File(event.getModConfigurationDirectory, "AE2Stuff")
     TuningLoader.loadConfigFiles()
     Machines.load()
     Items.load()
-    if (event.getSide == Side.CLIENT) {
-      Icons.init()
-      ModelLoaderRegistry.registerLoader(new WirelessModelLoader(Map("models/block/builtin/wireless" -> new WirelessModelFactory())))
-    }
+    proxy.preInit()
   }
 
   @EventHandler
-  def init(event: FMLInitializationEvent) {
+  def init(event: FMLInitializationEvent): Unit = {
     NetworkRegistry.INSTANCE.registerGuiHandler(this, guiHandler)
     NetHandler.init()
-    if (event.getSide == Side.CLIENT) {
-      OverlayRenderHandler.register(WirelessOverlayRender)
-      OverlayRenderHandler.register(VisualiserOverlayRender)
-      MouseEventHandler.init()
-    }
+    proxy.init()
     VisualiserPlayerTracker.init()
     WrenchRegistry.init()
     FMLInterModComms.sendMessage("waila", "register", "net.bdew.ae2stuff.waila.WailaHandler.loadCallback")
@@ -114,7 +108,7 @@ object AE2Stuff {
   val onPostInit = Event[FMLPostInitializationEvent]
 
   @EventHandler
-  def postInit(event: FMLPostInitializationEvent) {
+  def postInit(event: FMLPostInitializationEvent): Unit = {
     onPostInit.trigger(event)
   }
 
