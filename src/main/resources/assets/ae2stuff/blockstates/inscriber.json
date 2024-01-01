@@ -3,7 +3,7 @@
   "defaults": {
     "textures": {
       "top": "ae2stuff:blocks/inscriber/top",
-      "bottom": "ae2stuff:blocks/inscriber/top",
+      "bottom": "ae2stuff:blocks/inscriber/bottom",
       "side": "ae2stuff:blocks/inscriber/side_off"
     },
     "model": "minecraft:cube_bottom_top"
