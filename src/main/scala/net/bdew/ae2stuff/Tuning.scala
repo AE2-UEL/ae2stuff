@@ -26,7 +26,7 @@
 
 package net.bdew.ae2stuff
 
-import java.io.{File, FileWriter}
+import java.io.File
 import java.util.Optional
 import appeng.api.definitions.IItemDefinition
 import appeng.api.util.{AEColor, AEColoredItemDefinition}
