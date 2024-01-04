@@ -29,7 +29,9 @@ package net.bdew.ae2stuff.items.visualiser
 import net.bdew.ae2stuff.misc.{OverlayRenderHandler, WorldOverlayRenderer}
 import net.bdew.ae2stuff.network.{MsgVisualisationData, NetHandler}
 import net.bdew.lib.Client
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.EntityEquipmentSlot
+import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL11
 
 object VisualiserOverlayRender extends WorldOverlayRenderer {
@@ -102,11 +104,24 @@ object VisualiserOverlayRender extends WorldOverlayRenderer {
     GL11.glEnd()
   }
 
-  def renderLinks(links: Seq[VLink], width: Float, onlyP2P: Boolean): Unit = {
-    GL11.glLineWidth(width)
-    GL11.glBegin(GL11.GL_LINES)
-
+  def renderLinks(links: Seq[VLink], width: Float, onlyP2P: Boolean, player: EntityPlayer): Unit = {
     for (link <- links if (!onlyP2P) || link.flags.contains(VLinkFlags.COMPRESSED)) {
+      val x1 = link.node1.x
+      val x2 = link.node2.x
+      val y1 = link.node1.y
+      val y2 = link.node2.y
+      val z1 = link.node1.z
+      val z2 = link.node2.z
+
+      val cx = (x1 - x2) / (x1 + x2)
+      val cy = (y1 - y2) / (y1 + y2)
+      val cz = (z1 - z2) / (z1 + z2)
+      val dist = player.getDistanceSq(cx, cy, cz).toFloat
+
+      val lineWidth = clamp(MathHelper.fastInvSqrt(dist) + (width.toInt >> 2), 1, width.toInt)
+      GL11.glLineWidth(lineWidth)
+      GL11.glBegin(GL11.GL_LINES)
+
       if (link.flags.contains(VLinkFlags.COMPRESSED)) {
         GL11.glColor3f(1, 0, 1)
       } else if (link.flags.contains(VLinkFlags.DENSE)) {
@@ -115,11 +130,16 @@ object VisualiserOverlayRender extends WorldOverlayRenderer {
         GL11.glColor3f(0, 0, 1)
       }
 
-      GL11.glVertex3d(link.node1.x + 0.5D, link.node1.y + 0.5D, link.node1.z + 0.5D)
-      GL11.glVertex3d(link.node2.x + 0.5D, link.node2.y + 0.5D, link.node2.z + 0.5D)
+      GL11.glVertex3d(x1 + 0.5D, y1 + 0.5D, z1 + 0.5D)
+      GL11.glVertex3d(x2 + 0.5D, y2 + 0.5D, z2 + 0.5D)
+      GL11.glEnd()
     }
+  }
 
-    GL11.glEnd()
+  private def clamp(value: Double, min: Int, max: Int): Int = {
+    if (value < min) return min
+    if (value > max) return max
+    value.toInt
   }
 
   val renderNodesModes = Set(VisualisationModes.NODES, VisualisationModes.FULL, VisualisationModes.NONUM)
@@ -157,8 +177,8 @@ object VisualiserOverlayRender extends WorldOverlayRenderer {
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
 
         if (renderLinksModes.contains(mode)) {
-          renderLinks(dense, 16F, mode == VisualisationModes.P2P)
-          renderLinks(normal, 4F, mode == VisualisationModes.P2P)
+          renderLinks(dense, 16F, mode == VisualisationModes.P2P, Client.player)
+          renderLinks(normal, 4F, mode == VisualisationModes.P2P, Client.player)
         }
 
         GL11.glEndList()
