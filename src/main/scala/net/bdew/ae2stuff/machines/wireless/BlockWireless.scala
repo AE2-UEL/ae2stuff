@@ -50,6 +50,7 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
   override val TEClass = classOf[TileWireless]
 
   setHardness(1)
+  setHarvestLevel("pickaxe", 2)
 
   override def onBlockActivatedReal(world: World,
                                     pos: BlockPos,
