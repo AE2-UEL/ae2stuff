@@ -107,6 +107,7 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
                         case e: FailedConnectionException =>
                           player.sendMessage((L("ae2stuff.wireless.tool.failed") & ": " & e.getMessage).setColor(Color.RED))
                           tile.doUnlink()
+                          print("Failed to link wireless connector: " + e)
                       }
                     }
                     clearLocation(stack)
