@@ -126,7 +126,7 @@ object ItemVisualiser extends BaseItem("visualiser") with ItemLocationStore {
         var flags = VLinkFlags.ValueSet.empty
         if (c.a().hasFlag(GridFlags.DENSE_CAPACITY) && c.b().hasFlag(GridFlags.DENSE_CAPACITY)) flags += VLinkFlags.DENSE
         if (c.a().hasFlag(GridFlags.CANNOT_CARRY_COMPRESSED) && c.b().hasFlag(GridFlags.CANNOT_CARRY_COMPRESSED)) flags += VLinkFlags.COMPRESSED
-        VLink(n1, n2, c.getUsedChannels.toByte, flags)
+        VLink(n1, n2, c.getUsedChannels, flags)
       }
 
       NetHandler.sendTo(MsgVisualisationData(new VisualisationData(nodes.values.toList, connList.toList)), player)
