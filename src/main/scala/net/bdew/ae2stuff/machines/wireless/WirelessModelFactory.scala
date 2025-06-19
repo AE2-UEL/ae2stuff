@@ -2,7 +2,7 @@ package net.bdew.ae2stuff.machines.wireless
 
 import appeng.api.util.AEColor
 import net.bdew.ae2stuff.AE2Stuff
-import net.bdew.ae2stuff.machines.wireless.WirelessModelFactory.colorMap
+import net.bdew.ae2stuff.machines.wireless.WirelessModelFactory.{colorMap, inactiveColorMap, inactiveTexture}
 import net.minecraft.client.renderer.block.model.{IBakedModel, ModelResourceLocation}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.VertexFormat
@@ -24,8 +24,15 @@ object WirelessModelFactory {
   final val colorMap: Map[AEColor, ResourceLocation] =
     AEColor.values() map (t => t -> texture(t.name.toLowerCase)) toMap
 
+  final val inactiveColorMap: Map[AEColor, ResourceLocation] =
+    AEColor.values() map (t => t -> inactiveTexture(t.name.toLowerCase)) toMap
+
   private def texture(name: String): ResourceLocation = {
     new ResourceLocation(AE2Stuff.modId, "blocks/wireless/side_on_" + name)
+  }
+
+  private def inactiveTexture(name: String): ResourceLocation = {
+    new ResourceLocation(AE2Stuff.modId, "blocks/wireless/side_off_" + name)
   }
 }
 
@@ -36,8 +43,16 @@ class WirelessModelFactory extends IModel {
                     format: VertexFormat,
                     bakedTextureGetter: function.Function[ResourceLocation, TextureAtlasSprite]
                    ): IBakedModel = {
-    new WirelessBakedModel(format, colorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)))
+    new WirelessBakedModel(
+      format,
+      colorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)),
+      inactiveColorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)))
   }
 
-  override def getTextures: util.Collection[ResourceLocation] = colorMap.values.asJavaCollection
+  override def getTextures: util.Collection[ResourceLocation] = {
+    val list = new util.ArrayList[ResourceLocation]()
+    list.addAll(colorMap.values.asJavaCollection)
+    list.addAll(inactiveColorMap.values.asJavaCollection)
+    list
+  }
 }
