@@ -33,7 +33,7 @@ class ClientProxy extends CommonProxy {
   def registerModels(event: ModelRegistryEvent): Unit = {
     registerWirelessItemModel(0, AEColor.TRANSPARENT)
     registerWirelessHubItemModel(17, AEColor.TRANSPARENT)
-    for (i <- 0 to 16) {
+    for (i <- 0 to 15) {
       registerWirelessItemModel(i + 1, AEColor.values.apply(i))
       registerWirelessHubItemModel(i + 18, AEColor.values.apply(i))
     }
