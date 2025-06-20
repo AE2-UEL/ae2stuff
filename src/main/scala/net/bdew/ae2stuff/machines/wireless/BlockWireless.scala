@@ -30,7 +30,7 @@ import appeng.api.util.{AEColor, AEPartLocation}
 import appeng.core.sync.GuiBridge
 import appeng.items.tools.quartz.ToolQuartzCuttingKnife
 import appeng.util.Platform
-import net.bdew.ae2stuff.machines.wireless.BlockWirelessProperties.COLOR_PROPERTY
+import net.bdew.ae2stuff.machines.wireless.BlockWirelessProperties.{COLOR_PROPERTY, HUB_PROPERTY}
 import net.bdew.ae2stuff.misc.{BlockActiveTexture, BlockWrenchable, MachineMaterial}
 import net.bdew.lib.Misc
 import net.bdew.lib.block.{BaseBlock, HasItemBlock, HasTE, ItemBlockTooltip}
@@ -42,6 +42,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.{EnumDyeColor, ItemStack}
 import net.minecraft.util.math.{BlockPos, RayTraceResult}
+import net.minecraft.util.text.translation.I18n
 import net.minecraft.util.{EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.{IBlockAccess, World}
 import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedProperty}
@@ -50,6 +51,7 @@ import java.util
 
 object BlockWirelessProperties {
   val COLOR_PROPERTY = new WirelessColorProperty("wireless_color_property")
+  val HUB_PROPERTY = new WirelessHubProperty("wireless_hub_property")
 }
 
 object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[TileWireless] with BlockWrenchable with BlockActiveTexture with HasItemBlock {
@@ -58,17 +60,29 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
 
   setHardness(1)
 
+  var isHub = false
+
   override def getDrops(drops: NonNullList[ItemStack], world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int): Unit = {
     val stack = new ItemStack(this)
     val te = world.getTileEntity(pos).asInstanceOf[TileWireless]
-    if (te.color != AEColor.TRANSPARENT) {
-      stack.setItemDamage(te.color.ordinal() + 1)
+    if (te != null) {
+      if (te.isHub) {
+        if (te.color != AEColor.TRANSPARENT) {
+          stack.setItemDamage(te.color.ordinal + 18)
+        } else {
+          stack.setItemDamage(17)
+        }
+      } else if (te.color != AEColor.TRANSPARENT) {
+        stack.setItemDamage(te.color.ordinal + 1)
+      }
+    } else if (isHub) {
+      stack.setItemDamage(17)
     }
     drops.add(stack)
   }
 
   override def getSubBlocks(item: CreativeTabs, items: NonNullList[ItemStack]): Unit = {
-    for (meta <- 0 to 16) {
+    for (meta <- 0 to 33) {
       items.add(new ItemStack(this, 1, meta))
     }
   }
@@ -76,7 +90,13 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
   override def getPickBlock(state: IBlockState, target: RayTraceResult, world: World, pos: BlockPos, player: EntityPlayer): ItemStack = {
     val stack = new ItemStack(this)
     val te = getTE(world, pos)
-    if (te.color != AEColor.TRANSPARENT) {
+    if (te.isHub) {
+      if (te.color != AEColor.TRANSPARENT) {
+        stack.setItemDamage(te.color.ordinal + 18)
+      } else {
+        stack.setItemDamage(17)
+      }
+    } else if (te.color != AEColor.TRANSPARENT) {
       stack.setItemDamage(te.color.ordinal() + 1)
     }
     stack
@@ -107,7 +127,9 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
   }
 
   override def breakBlock(world: World, pos: BlockPos, state: IBlockState): Unit = {
-    getTE(world, pos).doUnlink()
+    val te = getTE(world, pos)
+    te.doUnlink()
+    isHub = te.isHub
     super.breakBlock(world, pos, state)
   }
 
@@ -118,22 +140,32 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
       te.placingPlayer = placer.asInstanceOf[EntityPlayer]
     }
     if (stack != ItemStack.EMPTY) {
+      val itemDamage = stack.getItemDamage
       if (stack.hasDisplayName) {
         te.customName = stack.getDisplayName
       }
-      if (stack.getItemDamage > 0) {
-        te.color = AEColor.values().apply(stack.getItemDamage - 1)
+      if (itemDamage > 16) {
+        te.isHub = true
+        if (itemDamage == 17) {
+          te.color = AEColor.values.apply(16)
+        } else {
+          te.color = AEColor.values.apply(itemDamage - 18)
+        }
+      } else if (itemDamage > 0) {
+        te.color = AEColor.values.apply(itemDamage - 1)
       }
     }
   }
 
-  override def getUnlistedProperties: List[IUnlistedProperty[_]] = super.getUnlistedProperties :+ COLOR_PROPERTY
+  override def getUnlistedProperties: List[IUnlistedProperty[_]] =
+    super.getUnlistedProperties :+ COLOR_PROPERTY :+ HUB_PROPERTY
 
   override def getExtendedState(state: IBlockState, world: IBlockAccess, pos: BlockPos): IBlockState = {
     val te = getTE(world, pos)
     if (te.isEmpty) return state
     super.getExtendedState(state, world, pos).asInstanceOf[IExtendedBlockState]
       .withProperty(COLOR_PROPERTY, te.get.color)
+      .withProperty(HUB_PROPERTY, Boolean.box(te.get.isHub))
   }
 
   override def recolorBlock(world: World, pos: BlockPos, side: EnumFacing, color: EnumDyeColor): Boolean = {
@@ -151,8 +183,20 @@ class ItemBlockWireless(b: Block) extends ItemBlockTooltip(b) {
   setHasSubtypes(true)
 
   override def addInformation(stack: ItemStack, world: World, list: util.List[String], flags: ITooltipFlag): Unit = {
-    if (stack.getItemDamage > 0) {
-      list.add(Misc.toLocal(AEColor.values().apply(stack.getItemDamage - 1).unlocalizedName))
+    val itemDamage = stack.getItemDamage
+    if (itemDamage == 0 || itemDamage == 17) {
+      list.add(Misc.toLocal(AEColor.values.apply(16).unlocalizedName))
+    } else if (itemDamage > 16) {
+      list.add(Misc.toLocal(AEColor.values.apply(itemDamage - 18).unlocalizedName))
+    } else if (itemDamage > 0) {
+      list.add(Misc.toLocal(AEColor.values().apply(itemDamage - 1).unlocalizedName))
     }
+  }
+
+  override def getItemStackDisplayName(stack: ItemStack): String = {
+    if (stack.getItemDamage >= 17) {
+      return I18n.translateToLocal("tile.ae2stuff.wireless_hub.name")
+    }
+    super.getItemStackDisplayName(stack)
   }
 }

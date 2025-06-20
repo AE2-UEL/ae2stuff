@@ -2,7 +2,7 @@ package net.bdew.ae2stuff.machines.wireless
 
 import appeng.api.util.AEColor
 import net.bdew.ae2stuff.AE2Stuff
-import net.bdew.ae2stuff.machines.wireless.WirelessModelFactory.{colorMap, inactiveColorMap, inactiveTexture}
+import net.bdew.ae2stuff.machines.wireless.WirelessModelFactory.{colorMap, hubColorMap, inactiveColorMap, inactiveHubColorMap, inactiveTexture}
 import net.minecraft.client.renderer.block.model.{IBakedModel, ModelResourceLocation}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.client.renderer.vertex.VertexFormat
@@ -22,10 +22,16 @@ object WirelessModelFactory {
   final val modelLocation = new ModelResourceLocation(new ResourceLocation(AE2Stuff.modId, "builtin/wireless"), "normal")
 
   final val colorMap: Map[AEColor, ResourceLocation] =
-    AEColor.values() map (t => t -> texture(t.name.toLowerCase)) toMap
+    AEColor.values map (t => t -> texture(t.name.toLowerCase)) toMap
 
   final val inactiveColorMap: Map[AEColor, ResourceLocation] =
-    AEColor.values() map (t => t -> inactiveTexture(t.name.toLowerCase)) toMap
+    AEColor.values map (t => t -> inactiveTexture(t.name.toLowerCase)) toMap
+
+  final val hubColorMap: Map[AEColor, ResourceLocation] =
+    AEColor.values map (t => t -> hubTexture(t.name.toLowerCase)) toMap
+
+  final val inactiveHubColorMap: Map[AEColor, ResourceLocation] =
+    AEColor.values map (t => t -> inactiveHubTexture(t.name.toLowerCase)) toMap
 
   private def texture(name: String): ResourceLocation = {
     new ResourceLocation(AE2Stuff.modId, "blocks/wireless/side_on_" + name)
@@ -33,6 +39,14 @@ object WirelessModelFactory {
 
   private def inactiveTexture(name: String): ResourceLocation = {
     new ResourceLocation(AE2Stuff.modId, "blocks/wireless/side_off_" + name)
+  }
+
+  private def hubTexture(name: String): ResourceLocation = {
+    new ResourceLocation(AE2Stuff.modId, "blocks/wireless_hub/side_on_" + name)
+  }
+
+  private def inactiveHubTexture(name: String): ResourceLocation = {
+    new ResourceLocation(AE2Stuff.modId, "blocks/wireless_hub/side_off_" + name)
   }
 }
 
@@ -46,13 +60,17 @@ class WirelessModelFactory extends IModel {
     new WirelessBakedModel(
       format,
       colorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)),
-      inactiveColorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)))
+      inactiveColorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)),
+      hubColorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)),
+      inactiveHubColorMap map (e => e._1 -> bakedTextureGetter.apply(e._2)))
   }
 
   override def getTextures: util.Collection[ResourceLocation] = {
     val list = new util.ArrayList[ResourceLocation]()
     list.addAll(colorMap.values.asJavaCollection)
     list.addAll(inactiveColorMap.values.asJavaCollection)
+    list.addAll(hubColorMap.values.asJavaCollection)
+    list.addAll(inactiveHubColorMap.values.asJavaCollection)
     list
   }
 }

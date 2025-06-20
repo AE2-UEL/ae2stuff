@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.Constants
 
 trait AdvItemLocationStore extends Item {
 
-  def addLocation(stack: ItemStack, loc: BlockPos, dimension: Int): Boolean = {
+  def addLocation(stack: ItemStack, loc: BlockPos, dimension: Int, isHub: Boolean): Boolean = {
     if (!stack.hasTagCompound) stack.setTagCompound(new NBTTagCompound)
     val tag = stack.getTagCompound
     if (tag.hasKey("dim") && tag.getInteger("dim") != dimension) {
@@ -19,7 +19,7 @@ trait AdvItemLocationStore extends Item {
     for (i <- 0 until locList.tagCount()) {
       val tag = locList.getCompoundTagAt(i)
       val pos = TBlockPos.decode(tag).get
-      if (pos.equals(loc)) {
+      if (pos == loc && !isHub) {
         return false
       }
     }

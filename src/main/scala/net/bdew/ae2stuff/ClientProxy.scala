@@ -21,22 +21,11 @@ class ClientProxy extends CommonProxy {
   @SubscribeEvent
   def registerModels(event: ModelRegistryEvent): Unit = {
     registerWirelessItemModel(0, AEColor.TRANSPARENT)
-    registerWirelessItemModel(1, AEColor.WHITE)
-    registerWirelessItemModel(2, AEColor.ORANGE)
-    registerWirelessItemModel(3, AEColor.MAGENTA)
-    registerWirelessItemModel(4, AEColor.LIGHT_BLUE)
-    registerWirelessItemModel(5, AEColor.YELLOW)
-    registerWirelessItemModel(6, AEColor.LIME)
-    registerWirelessItemModel(7, AEColor.PINK)
-    registerWirelessItemModel(8, AEColor.GRAY)
-    registerWirelessItemModel(9, AEColor.LIGHT_GRAY)
-    registerWirelessItemModel(10, AEColor.CYAN)
-    registerWirelessItemModel(11, AEColor.PURPLE)
-    registerWirelessItemModel(12, AEColor.BLUE)
-    registerWirelessItemModel(13, AEColor.BROWN)
-    registerWirelessItemModel(14, AEColor.GREEN)
-    registerWirelessItemModel(15, AEColor.RED)
-    registerWirelessItemModel(16, AEColor.BLACK)
+    registerWirelessHubItemModel(17, AEColor.TRANSPARENT)
+    for (i <- 0 to 16) {
+      registerWirelessItemModel(i + 1, AEColor.values.apply(i))
+      registerWirelessHubItemModel(i + 18, AEColor.values.apply(i))
+    }
   }
 
   private def registerWirelessItemModel(meta: Int, color: AEColor): Unit = {
@@ -44,6 +33,13 @@ class ClientProxy extends CommonProxy {
       BlockWireless.itemBlockInstance,
       meta,
       new ModelResourceLocation(String.format("%s:wireless/%s", AE2Stuff.modId, color.name.toLowerCase)))
+  }
+
+  private def registerWirelessHubItemModel(meta: Int, color: AEColor): Unit = {
+    ModelLoader.setCustomModelResourceLocation(
+      BlockWireless.itemBlockInstance,
+      meta,
+      new ModelResourceLocation(String.format("%s:wireless_hub/%s", AE2Stuff.modId, color.name.toLowerCase)))
   }
 
   override def init(): Unit = {

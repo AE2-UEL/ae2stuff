@@ -46,12 +46,6 @@ import net.minecraft.world.World
 object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
   setMaxStackSize(1)
 
-  def checkSecurity(t1: TileWireless, t2: TileWireless, p: EntityPlayer) = {
-    val pid = Security.getPlayerId(p)
-    Security.playerHasPermission(t1.getNode.getGrid, pid, SecurityPermissions.BUILD) &&
-      Security.playerHasPermission(t2.getNode.getGrid, pid, SecurityPermissions.BUILD)
-  }
-
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     val stack = player.getHeldItem(hand)
     if (player.isSneaking && !world.isRemote) {
@@ -71,6 +65,8 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
         // Check that the player can modify the network
         if (!Security.playerHasPermission(tile.getNode.getGrid, pid, SecurityPermissions.BUILD)) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
+        } else if (tile.isHub && tile.connectionsList.length == 32) {
+          player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
         } else {
           getLocation(stack) match {
             case Some(otherLoc) =>
@@ -89,10 +85,14 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
                     // And check that the player can modify it too
                     if (!Security.playerHasPermission(other.getNode.getGrid, pid, SecurityPermissions.BUILD)) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
+                    } else if (tile.isHub && other.isHub) {
+                      player.sendStatusMessage(L("ae2stuff.wireless.tool.twohubs").setColor(Color.RED), true)
+                    } else if (tile.connectionsList.length == 32 || other.connectionsList.length == 32) {
+                      player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
                     } else {
                       // Player can modify both sides - unlink current connections if any
-                      tile.doUnlink()
-                      other.doUnlink()
+                      if (!tile.isHub) tile.doUnlink()
+                      if (!other.isHub) other.doUnlink()
 
                       // Make player the owner of both blocks
                       tile.getNode.setPlayerID(pid)

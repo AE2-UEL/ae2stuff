@@ -42,6 +42,18 @@ import net.minecraft.world.World
 object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless]) {
   override def getNBTTag(player: EntityPlayerMP, te: TileWireless, tag: NBTTagCompound, world: World, pos: BlockPos): NBTTagCompound = {
 
+    if (te.isHub) {
+      val data = NBT(
+        "channels" -> te.getHubChannels,
+        "connections" -> te.connectionsList.length,
+        "color" -> te.color.ordinal,
+        "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage))
+      if (te.customName != null) {
+        data.setString("name", te.customName)
+      }
+      tag.setTag("wireless_hub_waila", data)
+      return tag
+    }
 
     tag.setTag("wireless_waila",
       te.link map (link => NBT(
@@ -88,6 +100,22 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
             Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
           } else Nil)
       }
+    } else if (acc.getNBTData.hasKey("wireless_hub_waila")) {
+      val data = acc.getNBTData.getCompoundTag("wireless_hub_waila")
+      val name = if (data.hasKey("name")) data.getString("name") else null
+      val color = data.getInteger("color")
+      List(
+        Misc.toLocal("tile.ae2stuff.wireless_hub.name"),
+        Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
+        Misc.toLocalF("ae2stuff.waila.wireless.hub_connections", data.getInteger("connections")),
+        Misc.toLocalF("ae2stuff.waila.wireless.power", DecFormat.short(data.getDouble("power")))
+      )
+        .++(if (name != null) {
+          Misc.toLocalF("ae2stuff.waila.wireless.name", name) :: Nil
+        } else Nil)
+        .++(if (color != AEColor.TRANSPARENT.ordinal()) {
+          Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
+        } else Nil)
     } else List.empty
   }
 }

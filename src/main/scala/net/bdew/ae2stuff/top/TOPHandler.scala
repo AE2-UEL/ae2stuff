@@ -43,19 +43,42 @@ object TOPHandler extends IProbeInfoProvider {
       }
 
     case wireless: TileWireless =>
-      if (wireless.link.isDefined) {
-        val pos = wireless.link.get
-        probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
-          " " + pos.getX + "," + pos.getY + "," + pos.getZ)
+      if (!wireless.isHub) {
+        if (wireless.link.isDefined) {
+          val pos = wireless.link.get
+          probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
+            " " + pos.getX + "," + pos.getY + "," + pos.getZ)
+        } else {
+          probeInfo.text(TextStyleClass.WARNING + "{*ae2stuff.waila.wireless.notconnected*}")
+        }
+      }
+
+      if (wireless.isHub || wireless.link.isDefined) {
         if (wireless.connection != null && AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
           val usedChannels = wireless.connection.getUsedChannels
           probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.channels*}" + " " + usedChannels)
         }
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
           (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
-      } else {
-        probeInfo.text(TextStyleClass.WARNING + "{*ae2stuff.waila.wireless.notconnected*}")
       }
+
+      if (wireless.isHub) {
+        val connections = wireless.connectionsList.length
+        var color = TextFormatting.GREEN
+        if (connections >= 16) {
+          color = TextFormatting.YELLOW
+        }
+        if (connections >= 24) {
+          color = TextFormatting.RED
+        }
+        if (connections >= 32) {
+          color = TextFormatting.DARK_RED
+        }
+
+        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.hub_connections*}"
+          + " " + color + connections + " / " + 32)
+      }
+
       val name = if (wireless.customName != null) wireless.customName else null
       if (name != null) {
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.name*}" + " " + name)

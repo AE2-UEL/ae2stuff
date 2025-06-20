@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "ae2stuff:blocks/wireless_hub/side_on_brown"
+  }
+}
