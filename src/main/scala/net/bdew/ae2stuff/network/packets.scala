@@ -36,3 +36,5 @@ case class MsgSetLock(slot: String, lock: Boolean) extends NetHandler.Message
 case class MsgVisualisationData(data: VisualisationData) extends NetHandler.Message
 
 case class MsgVisualisationMode(mode: VisualisationModes.Value) extends NetHandler.Message
+
+case class MsgAdvWirelessKitKeybind(pressed: Boolean) extends NetHandler.Message

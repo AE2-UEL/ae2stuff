@@ -9,6 +9,8 @@ item.ae2stuff.visualiser.name=Network Visualisation Tool
 
 ae2stuff.error.not_connected=Network not connected
 
+ae2stuff.keybinding.adv_wireless_second=Adv. Wireless Kit Secondary
+
 ae2stuff.waila.sleep.true=Sleeping
 ae2stuff.waila.sleep.false=Working
 ae2stuff.waila.power=%s / %s AE
@@ -59,9 +61,9 @@ ae2stuff.wireless.advtool.noconnectors=No connectors found in queue. Try putting
 ae2stuff.wireless.advtool.pop=Removed %s,%s,%s from queue
 ae2stuff.wireless.advtool.hub.queued=%s hub slots added to queue
 ae2stuff.wireless.advtool.queueing.clear=Queue cleared
-ae2stuff.wireless.tooltips.advtool.queueing.clear=Shift + Ctrl + R-click to clear queue
-ae2stuff.wireless.tooltips.advtool.hubqols.binding=Ctrl + R-click to connect to all free hub slots
-ae2stuff.wireless.tooltips.advtool.hubqols.queueing=Ctrl + R-click to add all free hub slots to queue
+ae2stuff.wireless.tooltips.advtool.queueing.clear=Shift + %s + R-click to clear queue
+ae2stuff.wireless.tooltips.advtool.hubqols.binding=%s + R-click to connect to all free hub slots
+ae2stuff.wireless.tooltips.advtool.hubqols.queueing=%s + R-click to add all free hub slots to queue
 
 ae2stuff.visualiser.bound=Visualising network at %s,%s,%s
 ae2stuff.visualiser.mode=Mode:

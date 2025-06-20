@@ -2,9 +2,11 @@ package net.bdew.ae2stuff.items
 
 import appeng.api.config.SecurityPermissions
 import appeng.api.exceptions.FailedConnectionException
+import net.bdew.ae2stuff.{AE2Stuff, ClientProxy}
 import net.bdew.ae2stuff.grid.Security
 import net.bdew.ae2stuff.machines.wireless.{BlockWireless, TileWireless}
 import net.bdew.ae2stuff.misc.AdvItemLocationStore
+import net.bdew.ae2stuff.network.{MsgAdvWirelessKitKeybind, NetHandler}
 import net.bdew.lib.Misc
 import net.bdew.lib.PimpVanilla.pimpBlockAccess
 import net.bdew.lib.items.BaseItem
@@ -15,7 +17,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.{ActionResult, EnumActionResult, EnumFacing, EnumHand}
 import net.minecraft.world.World
-import org.lwjgl.input.Keyboard
+import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
 import java.util
 
@@ -23,14 +25,23 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
 
   setMaxStackSize(1)
 
+  private val keybindMap = collection.mutable.WeakHashMap[EntityPlayer, Boolean]()
+
   val MODE_QUEUEING = 0
   private val MODE_BINDING = 1
+
+  NetHandler.regServerHandler {
+    case (MsgAdvWirelessKitKeybind(pressed), player) =>
+      keybindMap(player) = pressed
+  }
+
+  def onPlayerLoggedOut(player: EntityPlayer): Unit = keybindMap.remove(player)
 
   override def onItemRightClick(world: World, player: EntityPlayer, hand: EnumHand): ActionResult[ItemStack] = {
     import net.bdew.lib.helpers.ChatHelper._
     val stack = player.getHeldItem(hand)
     if (!world.isRemote && player.isSneaking) {
-      if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // todo keybind
+      if (keybindMap.getOrElse(player, false)) {
         while (hasLocation(stack)) {
           popLocation(stack)
         }
@@ -57,7 +68,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
 
     // Clearing/swapping mode
     if (player.isSneaking) {
-      if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // todo keybind
+      if (keybindMap.getOrElse(player, false)) {
         while (hasLocation(stack)) {
           popLocation(stack)
         }
@@ -91,7 +102,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
         }
 
         // Queue all available hub slots
-        if (tile.isHub && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // todo keybind
+        if (tile.isHub && keybindMap.getOrElse(player, false)) {
           var i = 0
           while (i < 32 - tile.connectionsList.length) {
             addLocation(stack, pos, world.provider.getDimension, tile.isHub)
@@ -122,7 +133,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
         while (doLoop) {
           doLoop = false
           if (hasLocation(stack)) {
-            if (tile.isHub && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) { // todo keybind
+            if (tile.isHub && keybindMap.getOrElse(player, false)) {
               if (tile.connectionsList.length < 31 && getLocations(stack).tagCount() > 1) {
                 doLoop = true
               } else if (tile.connectionsList.length == 32) {
@@ -189,7 +200,11 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
     EnumActionResult.SUCCESS
   }
 
+  @SideOnly(Side.CLIENT)
   override def addInformation(stack: ItemStack, world: World, list: util.List[String], flag: ITooltipFlag): Unit = {
+    val keybindName = AE2Stuff.proxy.asInstanceOf[ClientProxy].advWirelessKitKeybind.getDisplayName
+
+
     if (getLocations(stack).tagCount() > 0) {
       getNextLocation(stack) match {
         case Some(next) =>
@@ -207,7 +222,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
           list.add(loc.getX + "," + loc.getY + "," + loc.getZ)
         }
       }
-      list.add(Misc.toLocal("ae2stuff.wireless.tooltips.advtool.hubqols.queueing"))
+      list.add(Misc.toLocalF("ae2stuff.wireless.tooltips.advtool.hubqols.queueing", keybindName))
     } else if (getMode(stack) == MODE_BINDING) {
       list.add(Misc.toLocal("ae2stuff.wireless.advtool.binding"))
       if (getLocations(stack).tagCount() == 0) {
@@ -219,9 +234,9 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
           list.add(loc.getX + "," + loc.getY + "," + loc.getZ)
         }
       }
-      list.add(Misc.toLocal("ae2stuff.wireless.tooltips.advtool.hubqols.binding"))
+      list.add(Misc.toLocalF("ae2stuff.wireless.tooltips.advtool.hubqols.binding", keybindName))
     }
-    list.add(Misc.toLocal("ae2stuff.wireless.tooltips.advtool.queueing.clear"))
+    list.add(Misc.toLocalF("ae2stuff.wireless.tooltips.advtool.queueing.clear", keybindName))
     list.add(Misc.toLocal("ae2stuff.wireless.advtool.extra"))
   }
 }
