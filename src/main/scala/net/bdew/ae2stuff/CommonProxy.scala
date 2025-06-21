@@ -2,7 +2,9 @@ package net.bdew.ae2stuff
 
 import net.bdew.ae2stuff.items.ItemAdvWirelessKit
 import net.bdew.lib.network.SafeObjectInputStream
+import net.minecraft.item.crafting.IRecipe
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent
 
@@ -28,5 +30,10 @@ class CommonProxy {
   @SubscribeEvent
   def playerLoggedOut(event: PlayerLoggedOutEvent): Unit = {
     ItemAdvWirelessKit.onPlayerLoggedOut(event.player)
+  }
+
+  @SubscribeEvent
+  def registerRecipes(event: RegistryEvent.Register[IRecipe]): Unit = {
+    Recipes.load()
   }
 }
