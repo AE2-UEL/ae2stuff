@@ -2,7 +2,7 @@ package net.bdew.ae2stuff
 
 import appeng.api.util.AEColor
 import net.bdew.ae2stuff.items.visualiser.VisualiserOverlayRender
-import net.bdew.ae2stuff.machines.wireless.{BlockWireless, BlockWirelessHub, WirelessHubModelFactory, WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
+import net.bdew.ae2stuff.machines.wireless.{BlockWireless, BlockWirelessHub, WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
 import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
 import net.bdew.ae2stuff.network.{MsgAdvWirelessKitKeybind, NetHandler}
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -28,8 +28,8 @@ class ClientProxy extends CommonProxy {
     ModelLoaderRegistry.registerLoader(
       new WirelessModelLoader(
         Map(
-          "models/block/builtin/wireless" -> new WirelessModelFactory,
-          "models/block/builtin/wireless_hub" -> new WirelessHubModelFactory
+          "models/block/builtin/wireless" -> new WirelessModelFactory("wireless"),
+          "models/block/builtin/wireless_hub" -> new WirelessModelFactory("wireless_hub")
         )
       )
     )
