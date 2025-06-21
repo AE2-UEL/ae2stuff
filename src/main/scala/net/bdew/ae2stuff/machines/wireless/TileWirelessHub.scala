@@ -1,6 +1,8 @@
 package net.bdew.ae2stuff.machines.wireless
 
 import appeng.api.networking.IGridConnection
+import net.bdew.lib.data.base.UpdateKind
+import net.bdew.lib.multiblock.data.DataSlotPos
 import net.minecraft.block.state.IBlockState
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
@@ -10,7 +12,11 @@ class TileWirelessHub extends TileWireless {
 
   cfg = MachineWirelessHub
 
-  var connectionsList: Array[TileWireless] = Array[TileWireless]()
+  var connectionsList: Array[TileWireless] = Array()
+  var links: Array[DataSlotPos] = (1 to 32 map (x =>
+    DataSlotPos("link" + x, this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
+  )).toArray
+
   private var hubPowerUsage = 0d
 
   override def isHub: Boolean = true
@@ -19,21 +25,65 @@ class TileWirelessHub extends TileWireless {
     connectionsList foreach { that =>
       that.doUnlink()
     }
+    clearLinks()
   }
 
   override def setConnection(connection: IGridConnection, to: TileWireless): Unit = {
     this.connectionsList = this.connectionsList :+ to
+    addLink(to.getPos)
   }
 
-  override def breakConnection(): Unit = {
-    connectionsList = connectionsList.filterNot(_ == this)
+  override def breakConnection(from: TileWireless): Unit = {
+    connectionsList = connectionsList.filterNot(_ == from)
+    removeLink(from.getPos)
     setPowerUse(-getIdlePowerUsage)
-    setActive(world, active = false)
+    if (connectionsList.length == 0) {
+      setActive(world, active = false)
+    }
   }
 
   override def setPowerUse(power: Double): Unit = {
     hubPowerUsage += power
     this.setIdlePowerUse(hubPowerUsage)
+  }
+
+  private def addLink(pos: BlockPos): Unit = {
+    links.foreach(link =>
+      if (!link.isDefined) {
+        link.set(pos)
+        return
+      }
+    )
+  }
+
+  private def removeLink(pos: BlockPos): Unit = {
+    for (i <- links.indices) {
+      if (link.isDefined) {
+        link.value match {
+          case Some(linkPos) =>
+            if (linkPos == pos) {
+              links(i) := None
+              return
+            }
+        }
+      }
+    }
+
+    links.foreach(link =>
+      if (link.isDefined) {
+        link.value match {
+          case Some(linkPos) =>
+            if (linkPos == pos) {
+              link := None
+              return
+            }
+        }
+      }
+    )
+  }
+
+  private def clearLinks(): Unit = {
+    links.foreach(link => link := None)
   }
 
   def getHubChannels: Int = {

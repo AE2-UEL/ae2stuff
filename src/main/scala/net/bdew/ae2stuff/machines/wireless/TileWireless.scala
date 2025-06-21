@@ -96,7 +96,7 @@ class TileWireless extends TileDataSlots
     connection = null
 
     getLink foreach { other =>
-      other.breakConnection()
+      other.breakConnection(this)
     }
     setIdlePowerUse(0D)
     setActive(world, active = false)
@@ -143,7 +143,7 @@ class TileWireless extends TileDataSlots
     this.connection = connection
   }
 
-  def breakConnection(): Unit = {
+  def breakConnection(from: TileWireless): Unit = {
     connection = null
     setIdlePowerUse(0D)
     setActive(world, active = false)
