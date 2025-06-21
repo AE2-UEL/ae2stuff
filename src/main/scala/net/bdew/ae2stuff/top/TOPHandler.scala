@@ -43,25 +43,8 @@ object TOPHandler extends IProbeInfoProvider {
       }
 
     case wireless: TileWireless =>
-      if (!wireless.isHub) {
-        if (wireless.link.isDefined) {
-          val pos = wireless.link.get
-          probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
-            " " + pos.getX + "," + pos.getY + "," + pos.getZ)
-        } else {
-          probeInfo.text(TextStyleClass.WARNING + "{*ae2stuff.waila.wireless.notconnected*}")
-        }
-      }
 
-      if (wireless.isHub || wireless.link.isDefined) {
-        if (wireless.connection != null && AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
-          val usedChannels = wireless.connection.getUsedChannels
-          probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.channels*}" + " " + usedChannels)
-        }
-        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
-          (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
-      }
-
+      // Connection status
       if (wireless.isHub) {
         val connections = wireless.connectionsList.length
         var color = TextFormatting.GREEN
@@ -77,12 +60,40 @@ object TOPHandler extends IProbeInfoProvider {
 
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.hub_connections*}"
           + " " + color + connections + " / " + 32)
+      } else if (wireless.link.isDefined) {
+        val pos = wireless.link.get
+        probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
+          " " + pos.getX + "," + pos.getY + "," + pos.getZ)
+      } else {
+        probeInfo.text(TextStyleClass.WARNING + "{*ae2stuff.waila.wireless.notconnected*}")
       }
 
+      // Channels used
+      if (AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
+        var usedChannels = -1
+        if (wireless.isHub) {
+          usedChannels = wireless.connectionsList.length
+        } else if (wireless.link.isDefined && wireless.connection != null) {
+          usedChannels = wireless.connection.getUsedChannels
+        }
+        if (usedChannels != -1) {
+          probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.channels*}" + " " + usedChannels)
+        }
+      }
+
+      // Power used
+      if (wireless.isHub || wireless.link.isDefined) {
+        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
+          (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
+      }
+
+      // Custom name
       val name = if (wireless.customName != null) wireless.customName else null
       if (name != null) {
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.name*}" + " " + name)
       }
+
+      // Color
       if (wireless.color != AEColor.TRANSPARENT) {
         probeInfo.text(getTextColor(wireless.color) + "{*" + wireless.color.unlocalizedName + "*}")
       }

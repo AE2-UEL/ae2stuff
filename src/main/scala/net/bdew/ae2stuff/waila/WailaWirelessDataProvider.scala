@@ -105,9 +105,8 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
       val name = if (data.hasKey("name")) data.getString("name") else null
       val color = data.getInteger("color")
       List(
-        Misc.toLocal("tile.ae2stuff.wireless_hub.name"),
-        Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
         Misc.toLocalF("ae2stuff.waila.wireless.hub_connections", data.getInteger("connections")),
+        Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
         Misc.toLocalF("ae2stuff.waila.wireless.power", DecFormat.short(data.getDouble("power")))
       )
         .++(if (name != null) {
