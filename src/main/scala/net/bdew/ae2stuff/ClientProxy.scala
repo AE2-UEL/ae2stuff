@@ -2,7 +2,7 @@ package net.bdew.ae2stuff
 
 import appeng.api.util.AEColor
 import net.bdew.ae2stuff.items.visualiser.VisualiserOverlayRender
-import net.bdew.ae2stuff.machines.wireless.{BlockWireless, WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
+import net.bdew.ae2stuff.machines.wireless.{BlockWireless, BlockWirelessHub, WirelessHubModelFactory, WirelessModelFactory, WirelessModelLoader, WirelessOverlayRender}
 import net.bdew.ae2stuff.misc.{Icons, MouseEventHandler, OverlayRenderHandler}
 import net.bdew.ae2stuff.network.{MsgAdvWirelessKitKeybind, NetHandler}
 import net.minecraft.client.renderer.block.model.ModelResourceLocation
@@ -25,17 +25,24 @@ class ClientProxy extends CommonProxy {
     super.preInit()
     MinecraftForge.EVENT_BUS.register(this)
     Icons.init()
-    ModelLoaderRegistry.registerLoader(new WirelessModelLoader(Map("models/block/builtin/wireless" -> new WirelessModelFactory())))
+    ModelLoaderRegistry.registerLoader(
+      new WirelessModelLoader(
+        Map(
+          "models/block/builtin/wireless" -> new WirelessModelFactory,
+          "models/block/builtin/wireless_hub" -> new WirelessHubModelFactory
+        )
+      )
+    )
     ClientRegistry.registerKeyBinding(advWirelessKitKeybind)
   }
 
   @SubscribeEvent
   def registerModels(event: ModelRegistryEvent): Unit = {
     registerWirelessItemModel(0, AEColor.TRANSPARENT)
-    registerWirelessHubItemModel(17, AEColor.TRANSPARENT)
+    registerWirelessHubItemModel(0, AEColor.TRANSPARENT)
     for (i <- 0 to 15) {
       registerWirelessItemModel(i + 1, AEColor.values.apply(i))
-      registerWirelessHubItemModel(i + 18, AEColor.values.apply(i))
+      registerWirelessHubItemModel(i + 1, AEColor.values.apply(i))
     }
   }
 
@@ -58,7 +65,7 @@ class ClientProxy extends CommonProxy {
 
   private def registerWirelessHubItemModel(meta: Int, color: AEColor): Unit = {
     ModelLoader.setCustomModelResourceLocation(
-      BlockWireless.itemBlockInstance,
+      BlockWirelessHub.itemBlockInstance,
       meta,
       new ModelResourceLocation(String.format("%s:wireless_hub/%s", AE2Stuff.modId, color.name.toLowerCase)))
   }

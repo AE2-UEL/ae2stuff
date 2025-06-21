@@ -29,7 +29,7 @@ package net.bdew.ae2stuff.waila
 import appeng.api.config.PowerMultiplier
 import appeng.api.util.AEColor
 import mcp.mobius.waila.api.{IWailaConfigHandler, IWailaDataAccessor}
-import net.bdew.ae2stuff.machines.wireless.TileWireless
+import net.bdew.ae2stuff.machines.wireless.{TileWireless, TileWirelessHub}
 import net.bdew.lib.PimpVanilla._
 import net.bdew.lib.nbt.NBT
 import net.bdew.lib.{DecFormat, Misc}
@@ -43,13 +43,14 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
   override def getNBTTag(player: EntityPlayerMP, te: TileWireless, tag: NBTTagCompound, world: World, pos: BlockPos): NBTTagCompound = {
 
     if (te.isHub) {
+      val hub = te.asInstanceOf[TileWirelessHub]
       val data = NBT(
-        "channels" -> te.getHubChannels,
-        "connections" -> te.connectionsList.length,
-        "color" -> te.color.ordinal,
-        "power" -> PowerMultiplier.CONFIG.multiply(te.getIdlePowerUsage))
-      if (te.customName != null) {
-        data.setString("name", te.customName)
+        "channels" -> hub.getHubChannels,
+        "connections" -> hub.connectionsList.length,
+        "color" -> hub.color.ordinal,
+        "power" -> PowerMultiplier.CONFIG.multiply(hub.getIdlePowerUsage))
+      if (hub.customName != null) {
+        data.setString("name", hub.customName)
       }
       tag.setTag("wireless_hub_waila", data)
       return tag

@@ -9,7 +9,7 @@ import appeng.util.Platform
 import mcjty.theoneprobe.TheOneProbe
 import mcjty.theoneprobe.api.{IProbeHitData, IProbeInfo, IProbeInfoProvider, ProbeMode, TextStyleClass}
 import net.bdew.ae2stuff.grid.PoweredTile
-import net.bdew.ae2stuff.machines.wireless.TileWireless
+import net.bdew.ae2stuff.machines.wireless.{TileWireless, TileWirelessHub}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.TextFormatting
@@ -46,7 +46,8 @@ object TOPHandler extends IProbeInfoProvider {
 
       // Connection status
       if (wireless.isHub) {
-        val connections = wireless.connectionsList.length
+        val hub = wireless.asInstanceOf[TileWirelessHub]
+        val connections = hub.connectionsList.length
         var color = TextFormatting.GREEN
         if (connections >= 16) {
           color = TextFormatting.YELLOW
@@ -72,7 +73,8 @@ object TOPHandler extends IProbeInfoProvider {
       if (AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
         var usedChannels = -1
         if (wireless.isHub) {
-          usedChannels = wireless.connectionsList.length
+          val hub = wireless.asInstanceOf[TileWirelessHub]
+          usedChannels = hub.connectionsList.length
         } else if (wireless.link.isDefined && wireless.connection != null) {
           usedChannels = wireless.connection.getUsedChannels
         }

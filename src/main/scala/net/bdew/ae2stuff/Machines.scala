@@ -28,7 +28,7 @@ package net.bdew.ae2stuff
 
 import net.bdew.ae2stuff.machines.grower.MachineGrower
 import net.bdew.ae2stuff.machines.inscriber.MachineInscriber
-import net.bdew.ae2stuff.machines.wireless.MachineWireless
+import net.bdew.ae2stuff.machines.wireless.{MachineWireless, MachineWirelessHub}
 import net.bdew.lib.config.{BlockManager, MachineManager}
 
 object Blocks extends BlockManager(CreativeTabs.main)
@@ -37,4 +37,5 @@ object Machines extends MachineManager(Tuning.getSection("Machines"), AE2Stuff.g
   registerMachine(MachineGrower)
   registerMachine(MachineInscriber)
   registerMachine(MachineWireless)
+  registerMachine(MachineWirelessHub)
 }

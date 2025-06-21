@@ -27,11 +27,10 @@
 package net.bdew.ae2stuff.items
 
 import java.util
-
 import appeng.api.config.SecurityPermissions
 import appeng.api.exceptions.FailedConnectionException
 import net.bdew.ae2stuff.grid.Security
-import net.bdew.ae2stuff.machines.wireless.{BlockWireless, TileWireless}
+import net.bdew.ae2stuff.machines.wireless.{BlockWireless, BlockWirelessHub, TileWireless, TileWirelessHub}
 import net.bdew.ae2stuff.misc.ItemLocationStore
 import net.bdew.lib.Misc
 import net.bdew.lib.PimpVanilla._
@@ -58,14 +57,17 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
   override def onItemUse(player: EntityPlayer, world: World, pos: BlockPos, hand: EnumHand, facing: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): EnumActionResult = {
     import net.bdew.lib.helpers.ChatHelper._
     val stack = player.getHeldItem(hand)
-    if (world.getBlockState(pos).getBlock != BlockWireless) return EnumActionResult.PASS
+
+    val state = world.getBlockState(pos)
+    if (state.getBlock != BlockWireless && state.getBlock != BlockWirelessHub) return EnumActionResult.PASS
+
     if (!world.isRemote) {
       world.getTileSafe[TileWireless](pos) foreach { tile =>
         val pid = Security.getPlayerId(player)
         // Check that the player can modify the network
         if (!Security.playerHasPermission(tile.getNode.getGrid, pid, SecurityPermissions.BUILD)) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
-        } else if (tile.isHub && tile.connectionsList.length == 32) {
+        } else if (tile.isHub && tile.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
         } else {
           getLocation(stack) match {
@@ -87,7 +89,9 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
                     } else if (tile.isHub && other.isHub) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.twohubs").setColor(Color.RED), true)
-                    } else if (tile.connectionsList.length == 32 || other.connectionsList.length == 32) {
+                    } else if (tile.isHub && tile.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
+                      player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
+                    } else if (other.isHub && other.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
                     } else {
                       // Player can modify both sides - unlink current connections if any
@@ -128,7 +132,7 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
     EnumActionResult.SUCCESS
   }
 
-  override def addInformation(stack: ItemStack, worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag) = {
+  override def addInformation(stack: ItemStack, worldIn: World, tooltip: util.List[String], flagIn: ITooltipFlag): Unit = {
     super.addInformation(stack, worldIn, tooltip, flagIn)
     getLocation(stack) match {
       case Some(loc) =>

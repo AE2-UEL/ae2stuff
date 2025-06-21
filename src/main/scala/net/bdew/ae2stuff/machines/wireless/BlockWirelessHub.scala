@@ -1,29 +1,3 @@
-/*
- * Copyright (c) bdew, 2014 - 2020
- * https://github.com/bdew/ae2stuff
- *
- * This mod is distributed under the terms of the MIT License.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
-
 package net.bdew.ae2stuff.machines.wireless
 
 import appeng.api.util.{AEColor, AEPartLocation}
@@ -40,7 +14,8 @@ import net.minecraft.client.util.ITooltipFlag
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.{EnumDyeColor, ItemStack}
+import net.minecraft.item.{EnumDyeColor, ItemBlock, ItemStack}
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.math.{BlockPos, RayTraceResult}
 import net.minecraft.util.{EnumFacing, EnumHand, NonNullList}
 import net.minecraft.world.{IBlockAccess, World}
@@ -48,15 +23,15 @@ import net.minecraftforge.common.property.{IExtendedBlockState, IUnlistedPropert
 
 import java.util
 
-object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[TileWireless] with BlockWrenchable with BlockActiveTexture with HasItemBlock {
-  override val TEClass = classOf[TileWireless]
-  override val itemBlockInstance = new ItemBlockWireless(this)
+object BlockWirelessHub extends BaseBlock("wireless_hub", MachineMaterial) with HasTE[TileWireless] with BlockWrenchable with BlockActiveTexture with HasItemBlock {
+  override val TEClass: Class[_ <: TileEntity] = classOf[TileWirelessHub]
+  override val itemBlockInstance: ItemBlock = new ItemBlockWirelessHub(this)
 
   setHardness(1)
 
   override def getDrops(drops: NonNullList[ItemStack], world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int): Unit = {
     val stack = new ItemStack(this)
-    val te = world.getTileEntity(pos).asInstanceOf[TileWireless]
+    val te = world.getTileEntity(pos).asInstanceOf[TileWirelessHub]
     if (te != null) {
       if (te.color != AEColor.TRANSPARENT) {
         stack.setItemDamage(te.color.ordinal + 1)
@@ -94,7 +69,7 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
     val item = player.getHeldItem(hand)
     if (item != ItemStack.EMPTY && item.getItem.isInstanceOf[ToolQuartzCuttingKnife]) {
       val te = world.getTileEntity(pos)
-      if (te.isInstanceOf[TileWireless]) {
+      if (te.isInstanceOf[TileWirelessHub]) {
         if (Platform.isServer) {
           Platform.openGUI(player, te, AEPartLocation.fromFacing(side), GuiBridge.GUI_RENAMER)
         }
@@ -144,7 +119,7 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
   }
 }
 
-class ItemBlockWireless(b: Block) extends ItemBlockTooltip(b) {
+class ItemBlockWirelessHub(b: Block) extends ItemBlockTooltip(b) {
 
   setHasSubtypes(true)
 

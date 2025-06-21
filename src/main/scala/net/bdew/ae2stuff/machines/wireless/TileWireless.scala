@@ -53,21 +53,18 @@ class TileWireless extends TileDataSlots
   with ICustomNameObject
   with IColorableTile {
 
-  val cfg = MachineWireless
+  var cfg: WirelessPower = MachineWireless
 
-  val link = DataSlotPos("link", this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
+  val link: DataSlotPos = DataSlotPos("link", this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
 
   var connection: IGridConnection = null
 
   var customName: String = null
   var color: AEColor = AEColor.TRANSPARENT
-  var isHub = false
-  var connectionsList = Array[TileWireless]()
-  var hubPowerUsage = 0d;
-  def isLinked = link.isDefined
-  def getLink = link flatMap world.getTileSafe[TileWireless]
+  def isLinked: Boolean = link.isDefined
+  private def getLink = link flatMap world.getTileSafe[TileWireless]
 
-  override def getFlags = util.EnumSet.of(GridFlags.DENSE_CAPACITY)
+  override def getFlags: util.EnumSet[GridFlags] = util.EnumSet.of(GridFlags.DENSE_CAPACITY)
 
   serverTick.listen(() => {
     if (connection == null && link.isDefined) {
@@ -75,113 +72,85 @@ class TileWireless extends TileDataSlots
     }
   })
 
+  def isHub: Boolean = false
+
   def doLink(other: TileWireless): Boolean = {
     if (other.link.isEmpty && !isHub && !other.isHub) {
       other.link.set(pos)
       this.customName = other.customName
       link.set(other.getPos)
       setupConnection()
-      true
     } else if (isHub) {
       other.link.set(pos)
       other.customName = this.customName
       other.setupConnection()
-      true
     } else if (other.isHub) {
       link.set(other.getPos)
       customName = other.customName
       setupConnection()
-      true
     } else false
   }
 
   def doUnlink(): Unit = {
-    if (isHub) {
-      connectionsList foreach { that =>
-        that.doUnlink()
-      }
-    } else {
-      breakConnection()
-      getLink foreach { that =>
-        this.link := None
-        that.link := None
-      }
+    if (connection != null) connection.destroy()
+    connection = null
+
+    getLink foreach { other =>
+      other.breakConnection()
+    }
+    setIdlePowerUse(0D)
+    setActive(world, active = false)
+
+    getLink foreach { that =>
+      this.link := None
+      that.link := None
     }
   }
 
-  def setupConnection(): Boolean = {
+  // This can never be called if this is the hub, it will always be the standard connector
+  private def setupConnection(): Boolean = {
     getLink foreach { that =>
       try {
-        connection = AEApi.instance().grid().createGridConnection(this.getNode, that.getNode)
-        if (that.isHub) {
-          that.connectionsList = that.connectionsList :+ this
-        } else {
-          that.connection = connection
-        }
+
+        val connection = AEApi.instance().grid().createGridConnection(this.getNode, that.getNode)
+
+        this.setConnection(connection, that)
+        that.setConnection(connection, this)
 
         val dx = this.getPos.getX - that.getPos.getX
         val dy = this.getPos.getY - that.getPos.getY
         val dz = this.getPos.getZ - that.getPos.getZ
         val dist = math.sqrt(dx * dx + dy * dy + dz * dz)
-        val power = cfg.powerBase + cfg.powerDistanceMultiplier * dist * math.log(dist * dist + 3)
-        this.setIdlePowerUse(power)
-        if (!that.isHub) {
-          that.setIdlePowerUse(power)
-        } else {
-          that.setHubPowerUse(power)
-        }
-        if (world.isBlockLoaded(pos)) {
-          BlockWireless.setActive(world, pos, true)
-        }
-        if (world.isBlockLoaded(that.getPos)) {
-          BlockWireless.setActive(world, that.getPos, true)
-        }
+        val power = cfg.getPowerBase + cfg.getPowerDistanceMultiplier * dist * math.log(dist * dist + 3)
+
+        this.setPowerUse(power)
+        that.setPowerUse(power)
+
+        this.setActive(world, active = true)
+        that.setActive(world, active = true)
+
         return true
       } catch {
         case t: Exception =>
-          AE2Stuff.logWarnException("Failed setting up wireless link %s <-> %s", t, pos, that.getPos)
+          AE2Stuff.logWarn("Failed setting up wireless link %s <-> %s", pos, that.getPos)
           doUnlink()
       }
     }
     false
   }
 
-  def setHubPowerUse(power: Double): Unit = {
-    hubPowerUsage += power
-    this.setIdlePowerUse(hubPowerUsage)
-  }
-
-  def getHubChannels: Int = {
-    var channels = 0
-    connectionsList foreach { that =>
-      channels += that.connection.getUsedChannels
-    }
-    channels
+  def setConnection(connection: IGridConnection, to: TileWireless): Unit = {
+    this.connection = connection
   }
 
   def breakConnection(): Unit = {
-    if (connection != null)
-      connection.destroy()
     connection = null
-    getLink foreach { other =>
-      if (other.isHub) {
-        other.connectionsList = other.connectionsList.filterNot(_ == this)
-        other.setHubPowerUse(-getIdlePowerUsage)
-        if (world.isBlockLoaded(other.getPos)) {
-          BlockWireless.setActive(world, other.getPos, false)
-        }
-      } else {
-        other.connection = null
-        other.setIdlePowerUse(0D)
-        if (world.isBlockLoaded(other.getPos)) {
-          BlockWireless.setActive(world, other.getPos, false)
-        }
-      }
-    }
     setIdlePowerUse(0D)
-    if (world.isBlockLoaded(pos)) {
-      BlockWireless.setActive(world, pos, false)
-    }
+    setActive(world, active = false)
+  }
+
+  def setPowerUse(power: Double): Unit = {
+    this.setIdlePowerUse(power)
   }
 
   override def getMachineRepresentation: ItemStack = new ItemStack(BlockWireless)
@@ -194,7 +163,6 @@ class TileWireless extends TileDataSlots
       t.setString("CustomName", customName)
     }
     t.setShort("Color", color.ordinal().toShort)
-    t.setBoolean("IsHub", isHub)
   }
 
   override def doLoad(kind: UpdateKind.Value, t: NBTTagCompound): Unit = {
@@ -205,24 +173,20 @@ class TileWireless extends TileDataSlots
     if (!t.hasKey("Color")) {
       t.setShort("Color", AEColor.TRANSPARENT.ordinal().toShort)
     }
-    if (!t.hasKey("IsHub")) {
-      t.setBoolean("IsHub", isHub)
-    }
     val colorIdx = t.getShort("Color").toInt
     this.color = AEColor.values().apply(colorIdx)
-    this.isHub = t.getBoolean("IsHub")
     if (hasWorld) {
       scheduleRenderUpdate()
     }
   }
 
-  override def recolourBlock(enumFacing: EnumFacing, aeColor: AEColor, entityPlayer: EntityPlayer): Boolean = {
-    if (this.color == aeColor) {
+  override def recolourBlock(side: EnumFacing, color: AEColor, player: EntityPlayer): Boolean = {
+    if (this.color == color) {
       return false
     }
-    this.color = aeColor
-    if (getGridNode(AEPartLocation.fromFacing(enumFacing)) != null) {
-      getGridNode(AEPartLocation.fromFacing(enumFacing)).updateState()
+    this.color = color
+    if (getGridNode(AEPartLocation.fromFacing(side)) != null) {
+      getGridNode(AEPartLocation.fromFacing(side)).updateState()
       val state = getBlockType.getStateFromMeta(getBlockMetadata)
       world.notifyBlockUpdate(pos, state, state, 0)
       scheduleRenderUpdate()
@@ -236,6 +200,12 @@ class TileWireless extends TileDataSlots
       pos.getX - 1, pos.getY - 1, pos.getZ - 1,
       pos.getX + 1, pos.getY + 1, pos.getZ + 1
     )
+  }
+
+  def setActive(world: World, active: Boolean): Unit = {
+    if (world.isBlockLoaded(pos)) {
+      BlockWireless.setActive(world, pos, active)
+    }
   }
 
   override def getActionableNode: IGridNode = this.node
