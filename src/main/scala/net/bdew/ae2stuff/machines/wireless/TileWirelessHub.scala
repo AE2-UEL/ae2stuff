@@ -68,18 +68,6 @@ class TileWirelessHub extends TileWireless {
         }
       }
     }
-
-    links.foreach(link =>
-      if (link.isDefined) {
-        link.value match {
-          case Some(linkPos) =>
-            if (linkPos == pos) {
-              link := None
-              return
-            }
-        }
-      }
-    )
   }
 
   private def clearLinks(): Unit = {
