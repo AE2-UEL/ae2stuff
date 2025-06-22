@@ -138,7 +138,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
           if (hasLocation(stack)) {
             if (tile.isHub && keybindMap.getOrElse(player, false)) {
               val hub = tile.asInstanceOf[TileWirelessHub]
-              if (hub.canSupportNewLink && getLocations(stack).tagCount() > 1) {
+              if (hub.getNumMaxLinks - hub.connectionsList.length > 1 && getLocations(stack).tagCount() > 1) {
                 doLoop = true
               } else if (!hub.canSupportNewLink) {
                 player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
