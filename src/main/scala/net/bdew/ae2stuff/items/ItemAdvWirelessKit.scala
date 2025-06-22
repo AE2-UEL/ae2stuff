@@ -98,7 +98,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
       if (getMode(stack) == MODE_QUEUEING) {
 
         // Cannot queue since the connections list is full
-        if (tile.isHub && tile.asInstanceOf[TileWirelessHub].connectionsList.length >= 32) {
+        if (tile.isHub && !tile.asInstanceOf[TileWirelessHub].canSupportNewLink) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
           return EnumActionResult.SUCCESS
         }
@@ -107,7 +107,7 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
         if (tile.isHub && keybindMap.getOrElse(player, false)) {
           val hub = tile.asInstanceOf[TileWirelessHub]
           var i = 0
-          while (i < 32 - hub.connectionsList.length) {
+          while (i < hub.getNumMaxLinks - hub.connectionsList.length) {
             addLocation(stack, pos, world.provider.getDimension, isHub = true)
             i += 1
           }
@@ -138,9 +138,9 @@ object ItemAdvWirelessKit extends BaseItem("adv_wireless_kit") with AdvItemLocat
           if (hasLocation(stack)) {
             if (tile.isHub && keybindMap.getOrElse(player, false)) {
               val hub = tile.asInstanceOf[TileWirelessHub]
-              if (hub.connectionsList.length < 31 && getLocations(stack).tagCount() > 1) {
+              if (hub.canSupportNewLink && getLocations(stack).tagCount() > 1) {
                 doLoop = true
-              } else if (hub.connectionsList.length == 32) {
+              } else if (!hub.canSupportNewLink) {
                 player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
                 return EnumActionResult.SUCCESS
               }

@@ -67,7 +67,7 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
         // Check that the player can modify the network
         if (!Security.playerHasPermission(tile.getNode.getGrid, pid, SecurityPermissions.BUILD)) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
-        } else if (tile.isHub && tile.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
+        } else if (tile.isHub && !tile.asInstanceOf[TileWirelessHub].canSupportNewLink) {
           player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
         } else {
           getLocation(stack) match {
@@ -89,9 +89,9 @@ object ItemWirelessKit extends BaseItem("wireless_kit") with ItemLocationStore {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.security.player").setColor(Color.RED), true)
                     } else if (tile.isHub && other.isHub) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.twohubs").setColor(Color.RED), true)
-                    } else if (tile.isHub && tile.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
+                    } else if (tile.isHub && !tile.asInstanceOf[TileWirelessHub].canSupportNewLink) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
-                    } else if (other.isHub && other.asInstanceOf[TileWirelessHub].connectionsList.length == 32) {
+                    } else if (other.isHub && !other.asInstanceOf[TileWirelessHub].canSupportNewLink) {
                       player.sendStatusMessage(L("ae2stuff.wireless.tool.targethubfull").setColor(Color.RED), true)
                     } else {
                       // Player can modify both sides - unlink current connections if any

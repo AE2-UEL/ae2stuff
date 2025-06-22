@@ -47,6 +47,7 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
       val data = NBT(
         "channels" -> hub.getHubChannels,
         "connections" -> hub.connectionsList.length,
+        "maxConnections" -> hub.getNumMaxLinks,
         "color" -> hub.color.ordinal,
         "power" -> PowerMultiplier.CONFIG.multiply(hub.getIdlePowerUsage))
       if (hub.customName != null) {
@@ -106,7 +107,8 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
       val name = if (data.hasKey("name")) data.getString("name") else null
       val color = data.getInteger("color")
       List(
-        Misc.toLocalF("ae2stuff.waila.wireless.hub_connections", data.getInteger("connections")),
+        Misc.toLocalF("ae2stuff.waila.wireless.hub_connections",
+          data.getInteger("connections"), data.getInteger("maxConnections")),
         Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
         Misc.toLocalF("ae2stuff.waila.wireless.power", DecFormat.short(data.getDouble("power")))
       )

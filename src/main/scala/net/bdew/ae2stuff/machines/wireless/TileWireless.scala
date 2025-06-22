@@ -53,7 +53,7 @@ class TileWireless extends TileDataSlots
   with ICustomNameObject
   with IColorableTile {
 
-  var cfg: WirelessPower = MachineWireless
+  private val cfg = MachineWireless
 
   val link: DataSlotPos = DataSlotPos("link", this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
 
@@ -71,6 +71,8 @@ class TileWireless extends TileDataSlots
       setupConnection()
     }
   })
+
+  def getConfigs: WirelessPower = cfg
 
   def isHub: Boolean = false
 

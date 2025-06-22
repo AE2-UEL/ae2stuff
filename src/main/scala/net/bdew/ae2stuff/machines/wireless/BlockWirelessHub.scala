@@ -124,6 +124,7 @@ class ItemBlockWirelessHub(b: Block) extends ItemBlockTooltip(b) {
   setHasSubtypes(true)
 
   override def addInformation(stack: ItemStack, world: World, list: util.List[String], flags: ITooltipFlag): Unit = {
+    list.add(Misc.toLocalF("tile.ae2stuff.wireless_hub.tooltip1", MachineWirelessHub.maxConnections))
     val itemDamage = stack.getItemDamage
     if (itemDamage == 0) {
       list.add(Misc.toLocal(AEColor.TRANSPARENT.unlocalizedName))

@@ -60,7 +60,7 @@ object TOPHandler extends IProbeInfoProvider {
         }
 
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.hub_connections*}"
-          + " " + color + connections + " / " + 32)
+          + " " + color + connections + " / " + hub.getNumMaxLinks)
       } else if (wireless.isLinked) {
         val pos = wireless.link.get
         probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +

@@ -10,7 +10,9 @@ import net.minecraft.world.World
 
 class TileWirelessHub extends TileWireless {
 
-  cfg = MachineWirelessHub
+  private val cfg = MachineWirelessHub
+
+  def enableLinkRendering: Boolean = cfg.maxConnections <= 32
 
   var connectionsList: Array[TileWireless] = Array()
   var links: Array[DataSlotPos] = (1 to 32 map (x =>
@@ -20,6 +22,10 @@ class TileWirelessHub extends TileWireless {
   private var hubPowerUsage = 0d
 
   override def isHub: Boolean = true
+
+  def canSupportNewLink: Boolean = connectionsList.length <= cfg.maxConnections
+
+  def getNumMaxLinks: Int = cfg.maxConnections
 
   override def doUnlink(): Unit = {
     connectionsList foreach { that =>
@@ -48,6 +54,7 @@ class TileWirelessHub extends TileWireless {
   }
 
   private def addLink(pos: BlockPos): Unit = {
+    if (!enableLinkRendering) return
     links.foreach(link =>
       if (!link.isDefined) {
         link.set(pos)
@@ -57,6 +64,7 @@ class TileWirelessHub extends TileWireless {
   }
 
   private def removeLink(pos: BlockPos): Unit = {
+    if (!enableLinkRendering) return
     for (i <- links.indices) {
       val link = links(i)
       if (link.isDefined) {
@@ -72,6 +80,7 @@ class TileWirelessHub extends TileWireless {
   }
 
   private def clearLinks(): Unit = {
+    if (!enableLinkRendering) return
     links.foreach(link => link := None)
   }
 

@@ -43,6 +43,7 @@ object WirelessOverlayRender extends WorldOverlayRenderer {
 
       if (tile.isHub) {
         val hub = tile.asInstanceOf[TileWirelessHub]
+        if (!hub.enableLinkRendering) return
         hub.links.foreach(other =>
           if (other.isDefined) {
             other.value match {

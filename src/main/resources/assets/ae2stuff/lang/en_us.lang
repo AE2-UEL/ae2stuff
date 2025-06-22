@@ -3,6 +3,8 @@ tile.ae2stuff.inscriber.name=Advanced Inscriber
 tile.ae2stuff.wireless.name=Wireless Connector
 tile.ae2stuff.wireless_hub.name=Wireless Hub
 
+tile.ae2stuff.wireless_hub.tooltip1=Can connect to up to %s other Wireless Connectors
+
 item.ae2stuff.wireless_kit.name=Wireless Setup Kit
 item.ae2stuff.adv_wireless_kit.name=Advanced Wireless Setup Kit
 item.ae2stuff.visualiser.name=Network Visualisation Tool
@@ -24,7 +26,7 @@ ae2stuff.waila.wireless.power=Power Used: %s AE/t
 ae2stuff.top.wireless.power=Power Used:
 ae2stuff.waila.wireless.name=Name: %s
 ae2stuff.top.wireless.name=Name:
-ae2stuff.waila.wireless.hub_connections=Connections: %s / 32
+ae2stuff.waila.wireless.hub_connections=Connections: %s / %s
 ae2stuff.top.wireless.hub_connections=Connections:
 
 ae2stuff.gui.lock.on=Locked - Can't be removed with automation
