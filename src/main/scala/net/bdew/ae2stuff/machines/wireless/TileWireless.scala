@@ -57,9 +57,9 @@ class TileWireless extends TileDataSlots
 
   val link: DataSlotPos = DataSlotPos("link", this).setUpdate(UpdateKind.SAVE, UpdateKind.WORLD)
 
-  var connection: IGridConnection = null
+  var connection: IGridConnection = _
 
-  var customName: String = null
+  var customName: String = _
   var color: AEColor = AEColor.TRANSPARENT
   def isLinked: Boolean = link.isDefined
   private def getLink = link flatMap world.getTileSafe[TileWireless]
@@ -131,7 +131,7 @@ class TileWireless extends TileDataSlots
 
         return true
       } catch {
-        case t: Exception =>
+        case _: Exception =>
           AE2Stuff.logWarn("Failed setting up wireless link %s <-> %s", pos, that.getPos)
           doUnlink()
       }

@@ -58,6 +58,7 @@ class TileWirelessHub extends TileWireless {
 
   private def removeLink(pos: BlockPos): Unit = {
     for (i <- links.indices) {
+      val link = links(i)
       if (link.isDefined) {
         link.value match {
           case Some(linkPos) =>

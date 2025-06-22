@@ -61,7 +61,7 @@ object TOPHandler extends IProbeInfoProvider {
 
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.hub_connections*}"
           + " " + color + connections + " / " + 32)
-      } else if (wireless.link.isDefined) {
+      } else if (wireless.isLinked) {
         val pos = wireless.link.get
         probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
           " " + pos.getX + "," + pos.getY + "," + pos.getZ)
@@ -75,7 +75,7 @@ object TOPHandler extends IProbeInfoProvider {
         if (wireless.isHub) {
           val hub = wireless.asInstanceOf[TileWirelessHub]
           usedChannels = hub.connectionsList.length
-        } else if (wireless.link.isDefined && wireless.connection != null) {
+        } else if (wireless.isLinked && wireless.connection != null) {
           usedChannels = wireless.connection.getUsedChannels
         }
         if (usedChannels != -1) {
@@ -84,7 +84,7 @@ object TOPHandler extends IProbeInfoProvider {
       }
 
       // Power used
-      if (wireless.isHub || wireless.link.isDefined) {
+      if (wireless.isHub || wireless.isLinked) {
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
           (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
       }
