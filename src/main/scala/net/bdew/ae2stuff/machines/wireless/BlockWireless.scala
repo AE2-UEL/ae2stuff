@@ -53,6 +53,7 @@ object BlockWireless extends BaseBlock("wireless", MachineMaterial) with HasTE[T
   override val itemBlockInstance = new ItemBlockWireless(this)
 
   setHardness(1)
+  setHarvestLevel("pickaxe", 2)
 
   override def getDrops(drops: NonNullList[ItemStack], world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int): Unit = {
     val stack = new ItemStack(this)

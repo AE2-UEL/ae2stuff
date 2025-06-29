@@ -28,6 +28,7 @@ object BlockWirelessHub extends BaseBlock("wireless_hub", MachineMaterial) with 
   override val itemBlockInstance: ItemBlock = new ItemBlockWirelessHub(this)
 
   setHardness(1)
+  setHarvestLevel("pickaxe", 2)
 
   override def getDrops(drops: NonNullList[ItemStack], world: IBlockAccess, pos: BlockPos, state: IBlockState, fortune: Int): Unit = {
     val stack = new ItemStack(this)

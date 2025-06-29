@@ -41,6 +41,7 @@ object BlockGrower extends BaseBlock("grower", MachineMaterial) with HasTE[TileG
   override val TEClass = classOf[TileGrower]
 
   setHardness(1)
+  setHarvestLevel("pickaxe", 2)
 
   override def onBlockActivatedReal(world: World, pos: BlockPos, state: IBlockState, player: EntityPlayer, hand: EnumHand, heldItem: ItemStack, side: EnumFacing, hitX: Float, hitY: Float, hitZ: Float): Boolean = {
     player.openGui(AE2Stuff, MachineGrower.guiId, world, pos.getX, pos.getY, pos.getZ)
