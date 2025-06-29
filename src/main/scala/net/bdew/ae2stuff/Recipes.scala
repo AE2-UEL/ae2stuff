@@ -39,14 +39,14 @@ object Recipes {
       if (color != AEColor.TRANSPARENT) {
         GameRegistry.addShapedRecipe(
           new ResourceLocation(AE2Stuff.modId, "wireless_coloring_" + color.name.toLowerCase), null,
-          new ItemStack(BlockWireless, 1, 1 + color.ordinal),
+          new ItemStack(BlockWireless, 8, 1 + color.ordinal),
           "WWW", "WDW", "WWW",
           Char.box('W'), new ItemStack(BlockWireless),
           Char.box('D'), colorOreDicts(color.dye))
 
         GameRegistry.addShapedRecipe(
           new ResourceLocation(AE2Stuff.modId, "wireless_hub_coloring_" + color.name.toLowerCase), null,
-          new ItemStack(BlockWirelessHub, 1, 1 + color.ordinal),
+          new ItemStack(BlockWirelessHub, 8, 1 + color.ordinal),
           "HHH", "HDH", "HHH",
           Char.box('H'), new ItemStack(BlockWirelessHub),
           Char.box('D'), colorOreDicts(color.dye))
