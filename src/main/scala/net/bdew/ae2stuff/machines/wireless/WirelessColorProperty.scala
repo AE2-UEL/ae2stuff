@@ -13,3 +13,7 @@ class WirelessColorProperty(name: String) extends IUnlistedProperty[AEColor] {
 
   override def valueToString(value: AEColor): String = value.name.toLowerCase
 }
+
+object BlockWirelessProperties {
+  val COLOR_PROPERTY = new WirelessColorProperty("wireless_color_property")
+}

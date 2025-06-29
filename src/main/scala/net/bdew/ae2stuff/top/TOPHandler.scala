@@ -9,7 +9,7 @@ import appeng.util.Platform
 import mcjty.theoneprobe.TheOneProbe
 import mcjty.theoneprobe.api.{IProbeHitData, IProbeInfo, IProbeInfoProvider, ProbeMode, TextStyleClass}
 import net.bdew.ae2stuff.grid.PoweredTile
-import net.bdew.ae2stuff.machines.wireless.TileWireless
+import net.bdew.ae2stuff.machines.wireless.{TileWireless, TileWirelessHub}
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.text.TextFormatting
@@ -43,23 +43,59 @@ object TOPHandler extends IProbeInfoProvider {
       }
 
     case wireless: TileWireless =>
-      if (wireless.link.isDefined) {
+
+      // Connection status
+      if (wireless.isHub) {
+        val hub = wireless.asInstanceOf[TileWirelessHub]
+        val connections = hub.connectionsList.length
+        var color = TextFormatting.GREEN
+        if (connections >= 16) {
+          color = TextFormatting.YELLOW
+        }
+        if (connections >= 24) {
+          color = TextFormatting.RED
+        }
+        if (connections >= 32) {
+          color = TextFormatting.DARK_RED
+        }
+
+        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.hub_connections*}"
+          + " " + color + connections + " / " + hub.getNumMaxLinks)
+      } else if (wireless.isLinked) {
         val pos = wireless.link.get
         probeInfo.text(TextStyleClass.OK + "{*ae2stuff.top.wireless.connected*}" +
           " " + pos.getX + "," + pos.getY + "," + pos.getZ)
-        if (wireless.connection != null && AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
-          val usedChannels = wireless.connection.getUsedChannels
-          probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.channels*}" + " " + usedChannels)
-        }
-        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
-          (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
       } else {
         probeInfo.text(TextStyleClass.WARNING + "{*ae2stuff.waila.wireless.notconnected*}")
       }
+
+      // Channels used
+      if (AEConfig.instance().isFeatureEnabled(AEFeature.CHANNELS)) {
+        var usedChannels = -1
+        if (wireless.isHub) {
+          val hub = wireless.asInstanceOf[TileWirelessHub]
+          usedChannels = hub.connectionsList.length
+        } else if (wireless.isLinked && wireless.connection != null) {
+          usedChannels = wireless.connection.getUsedChannels
+        }
+        if (usedChannels != -1) {
+          probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.channels*}" + " " + usedChannels)
+        }
+      }
+
+      // Power used
+      if (wireless.isHub || wireless.isLinked) {
+        probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.power*}" + " " +
+          (math rint PowerMultiplier.CONFIG.multiply(wireless.getIdlePowerUsage) * 10) / 10 + " AE/t")
+      }
+
+      // Custom name
       val name = if (wireless.customName != null) wireless.customName else null
       if (name != null) {
         probeInfo.text(TextStyleClass.INFO + "{*ae2stuff.top.wireless.name*}" + " " + name)
       }
+
+      // Color
       if (wireless.color != AEColor.TRANSPARENT) {
         probeInfo.text(getTextColor(wireless.color) + "{*" + wireless.color.unlocalizedName + "*}")
       }

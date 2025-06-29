@@ -40,7 +40,7 @@ object VLinkFlags extends Enumeration {
 
 case class VNode(x: Int, y: Int, z: Int, flags: VNodeFlags.ValueSet)
 
-case class VLink(node1: VNode, node2: VNode, channels: Byte, flags: VLinkFlags.ValueSet)
+case class VLink(node1: VNode, node2: VNode, channels: Int, flags: VLinkFlags.ValueSet)
 
 class VisualisationData(var nodes: Seq[VNode], var links: Seq[VLink]) extends Externalizable {
   def this() = this(Seq.empty, Seq.empty)
@@ -63,7 +63,7 @@ class VisualisationData(var nodes: Seq[VNode], var links: Seq[VLink]) extends Ex
       links = for (i <- 0 until linkCount) yield {
         val n1 = in.readInt()
         val n2 = in.readInt()
-        val c = in.readByte()
+        val c = in.readInt()
         val f = in.readByte()
         VLink(nodes(n1), nodes(n2), c, VLinkFlags.ValueSet.fromBitMask(Array(f.toLong)))
       }
@@ -86,7 +86,7 @@ class VisualisationData(var nodes: Seq[VNode], var links: Seq[VLink]) extends Ex
     for (l <- links) {
       out.writeInt(nodeMap(l.node1))
       out.writeInt(nodeMap(l.node2))
-      out.writeByte(l.channels)
+      out.writeInt(l.channels)
       out.writeByte(l.flags.toBitMask(0).toByte)
     }
   }

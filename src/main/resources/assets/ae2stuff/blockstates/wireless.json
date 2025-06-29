@@ -12,9 +12,7 @@
         "model": "ae2stuff:builtin/wireless"
       },
       "false": {
-        "textures": {
-          "all": "ae2stuff:blocks/wireless/side_off"
-        }
+        "model": "ae2stuff:builtin/wireless"
       }
     },
     "inventory": [

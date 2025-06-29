@@ -29,7 +29,7 @@ package net.bdew.ae2stuff.waila
 import appeng.api.config.PowerMultiplier
 import appeng.api.util.AEColor
 import mcp.mobius.waila.api.{IWailaConfigHandler, IWailaDataAccessor}
-import net.bdew.ae2stuff.machines.wireless.TileWireless
+import net.bdew.ae2stuff.machines.wireless.{TileWireless, TileWirelessHub}
 import net.bdew.lib.PimpVanilla._
 import net.bdew.lib.nbt.NBT
 import net.bdew.lib.{DecFormat, Misc}
@@ -42,6 +42,20 @@ import net.minecraft.world.World
 object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless]) {
   override def getNBTTag(player: EntityPlayerMP, te: TileWireless, tag: NBTTagCompound, world: World, pos: BlockPos): NBTTagCompound = {
 
+    if (te.isHub) {
+      val hub = te.asInstanceOf[TileWirelessHub]
+      val data = NBT(
+        "channels" -> hub.getHubChannels,
+        "connections" -> hub.connectionsList.length,
+        "maxConnections" -> hub.getNumMaxLinks,
+        "color" -> hub.color.ordinal,
+        "power" -> PowerMultiplier.CONFIG.multiply(hub.getIdlePowerUsage))
+      if (hub.customName != null) {
+        data.setString("name", hub.customName)
+      }
+      tag.setTag("wireless_hub_waila", data)
+      return tag
+    }
 
     tag.setTag("wireless_waila",
       te.link map (link => NBT(
@@ -88,6 +102,22 @@ object WailaWirelessDataProvider extends BaseDataProvider(classOf[TileWireless])
             Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
           } else Nil)
       }
+    } else if (acc.getNBTData.hasKey("wireless_hub_waila")) {
+      val data = acc.getNBTData.getCompoundTag("wireless_hub_waila")
+      val name = if (data.hasKey("name")) data.getString("name") else null
+      val color = data.getInteger("color")
+      List(
+        Misc.toLocalF("ae2stuff.waila.wireless.hub_connections",
+          data.getInteger("connections"), data.getInteger("maxConnections")),
+        Misc.toLocalF("ae2stuff.waila.wireless.channels", data.getInteger("channels")),
+        Misc.toLocalF("ae2stuff.waila.wireless.power", DecFormat.short(data.getDouble("power")))
+      )
+        .++(if (name != null) {
+          Misc.toLocalF("ae2stuff.waila.wireless.name", name) :: Nil
+        } else Nil)
+        .++(if (color != AEColor.TRANSPARENT.ordinal()) {
+          Misc.toLocal(AEColor.values().apply(color).unlocalizedName) :: Nil
+        } else Nil)
     } else List.empty
   }
 }
