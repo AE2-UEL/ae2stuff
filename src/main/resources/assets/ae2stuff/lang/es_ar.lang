@@ -1,5 +1,5 @@
-tile.ae2stuff.grower.name=Cámara de Crecimiento de Cristales
-tile.ae2stuff.inscriber.name=Grabador Avanzado
+tile.ae2stuff.grower.name=Cámara de Cultivo de Cristales
+tile.ae2stuff.inscriber.name=Prensa Avanzada
 tile.ae2stuff.wireless.name=Conector Inalámbrico
 tile.ae2stuff.wireless_hub.name=Concentrador Inalámbrico
 
@@ -29,21 +29,21 @@ ae2stuff.top.wireless.name=Nombre:
 ae2stuff.waila.wireless.hub_connections=Conexiones: %s / %s
 ae2stuff.top.wireless.hub_connections=Conexiones:
 
-ae2stuff.gui.lock.on=Bloqueado - No se puede remover con automatización
-ae2stuff.gui.lock.off=Desbloqueado - Se puede remover con automatización
-ae2stuff.gui.lock.note=Si ningún proceso está ejecutandose y la ranura del medio está vacía
+ae2stuff.gui.lock.on=Bloqueado - No se puede eliminar con automatización
+ae2stuff.gui.lock.off=Desbloqueado - Se puede eliminar con automatización
+ae2stuff.gui.lock.note=Si ningún proceso está ejecutándose y la ranura del medio está vacía
 
 ae2stuff.gui.recipes=Recetas
 
-ae2stuff.wireless.tool.empty=Haz clic en el Conector Inalámbrico para vincularlo
+ae2stuff.wireless.tool.empty=Hacé clic en el Conector Inalámbrico para vincularlo
 ae2stuff.wireless.tool.bound1=Vinculado a %s,%s,%s
-ae2stuff.wireless.tool.bound2=Haz clic en el otro Conector Inalámbrico para conectarlo
+ae2stuff.wireless.tool.bound2=Hacé clic en el otro Conector Inalámbrico para conectarlo
 ae2stuff.wireless.tool.connected=Conectado a %s,%s,%s
 ae2stuff.wireless.tool.failed=Conexión fallida
 ae2stuff.wireless.tool.dimension=Ambos conectores tienen que estar en la misma dimensión
 ae2stuff.wireless.tool.noexist=El conector vinculado no existe
 ae2stuff.wireless.tool.security.network=Violación de seguridad - las redes no se pueden conectar
-ae2stuff.wireless.tool.security.player=Violación de seguridad - no tienes permitido modificar esta red
+ae2stuff.wireless.tool.security.player=Violación de seguridad - no tenés permiso para modificar esta red
 ae2stuff.wireless.tool.targethubfull=El Concentrador elegido está lleno
 ae2stuff.wireless.tool.twohubs=No se pueden vincular dos Concentradores Inalámbricos
 
@@ -53,19 +53,19 @@ ae2stuff.wireless.advtool.queueing.activated=Modo de Encolado activado
 ae2stuff.wireless.advtool.binding.activated=Modo de Vinculación activado
 ae2stuff.wireless.advtool.queued=Se agregó el conector en %s,%s,%s a la cola
 ae2stuff.wireless.advtool.queuederror=El conector ya está en la cola
-ae2stuff.wireless.advtool.queueing.empty=Haz clic en Conectores Inalámbricos para agregarlos a la cola de vinculación
-ae2stuff.wireless.advtool.binding.empty=Cambia al Modo de Encolado para agregar conectores a la cola
+ae2stuff.wireless.advtool.queueing.empty=Hacé clic en Conectores Inalámbricos para agregarlos a la cola de vinculación
+ae2stuff.wireless.advtool.binding.empty=Cambiá al Modo de Encolado para agregar conectores a la cola
 ae2stuff.wireless.advtool.queueing.notempty=Conectores inalámbricos encolados:
 ae2stuff.wireless.advtool.binding.notempty=Conectores inalámbricos encolados para ser vinculados:
 ae2stuff.wireless.advtool.connector.next=Próximo conector encolado: %s,%s,%s
-ae2stuff.wireless.advtool.extra=§oHaz clic Derecho mientras te agachas para cambiar entre los modos de encolado y vinculación
-ae2stuff.wireless.advtool.noconnectors=No se encontraron conectores en la cola. Prueba activar el modo de encolado en la herramienta para agregar algunos
+ae2stuff.wireless.advtool.extra=§oHacé clic derecho mientras te agachás para cambiar entre los modos de encolado y vinculación
+ae2stuff.wireless.advtool.noconnectors=No se encontraron conectores en la cola. Probá activar el modo de encolado en la herramienta y agregarlos
 ae2stuff.wireless.advtool.pop=Se eliminó %s,%s,%s de la cola
 ae2stuff.wireless.advtool.hub.queued=Se agregaron %s ranuras de concentradores a la cola
-ae2stuff.wireless.advtool.queueing.clear=Se limpió la cola
-ae2stuff.wireless.tooltips.advtool.queueing.clear=Mayús + %s + clic Derecho para limpiar la cola
-ae2stuff.wireless.tooltips.advtool.hubqols.binding=%s + clic Derecho para conectar a todas las ranuras disponibles de concentradores
-ae2stuff.wireless.tooltips.advtool.hubqols.queueing=%s + clic Derecho para agregar todas las ranuras disponibles de concentradores a la cola
+ae2stuff.wireless.advtool.queueing.clear=Se borró la cola
+ae2stuff.wireless.tooltips.advtool.queueing.clear=Mayús + %s + clic derecho para borrar la cola
+ae2stuff.wireless.tooltips.advtool.hubqols.binding=%s + clic derecho para conectar a todas las ranuras disponibles de concentradores
+ae2stuff.wireless.tooltips.advtool.hubqols.queueing=%s + clic derecho para agregar todas las ranuras disponibles de concentradores a la cola
 
 ae2stuff.visualiser.bound=Visualizando la red en %s,%s,%s
 ae2stuff.visualiser.mode=Modo:
