@@ -1,16 +1,79 @@
 tile.ae2stuff.grower.name=Câmara de Crescimento de Cristais
 tile.ae2stuff.inscriber.name=Inscritor Avançado
+tile.ae2stuff.wireless.name=Conector Sem Fio
+tile.ae2stuff.wireless_hub.name=Central de Conexão Sem Fio
+
+tile.ae2stuff.wireless_hub.tooltip1=Pode-se ligar com até %s Conectores Sem Fio
+
+item.ae2stuff.wireless_kit.name=Kit de Configuração de Rede Sem Fio
+item.ae2stuff.adv_wireless_kit.name=Kit Avançado de Configuração de Rede Sem Fio
+item.ae2stuff.visualiser.name=Visualizador de Rede
 
 ae2stuff.error.not_connected=Rede não conectada
+
+ae2stuff.keybinding.adv_wireless_second=Função Secundária do Kit Avançado Sem Fio
 
 ae2stuff.waila.sleep.true=Dormindo
 ae2stuff.waila.sleep.false=Trabalhando
 ae2stuff.waila.power=%s / %s AE
+
+ae2stuff.waila.wireless.connected=Conectado a %s,%s,%s
+ae2stuff.top.wireless.connected=Conectado a
+ae2stuff.waila.wireless.notconnected=Desconectado
+ae2stuff.waila.wireless.channels=Canais: %s
+ae2stuff.top.wireless.channels=Canais:
+ae2stuff.waila.wireless.power=Uso de Energia: %s AE/t
+ae2stuff.top.wireless.power=Uso de Energia:
+ae2stuff.waila.wireless.name=Nome: %s
+ae2stuff.top.wireless.name=Nome:
+ae2stuff.waila.wireless.hub_connections=Conexões: %s / %s
+ae2stuff.top.wireless.hub_connections=Conexões:
 
 ae2stuff.gui.lock.on=Trancado - Não pode ser removido com automação
 ae2stuff.gui.lock.off=Destrancado - Pode ser removido com automação
 ae2stuff.gui.lock.note=Se não há nenhum processo ocorrendo e o slot do meio estiver vazio
 
 ae2stuff.gui.recipes=Receitas
+
+ae2stuff.wireless.tool.empty=Clique no Conector Sem Fio para fazer uma ligação
+ae2stuff.wireless.tool.bound1=Ligado a %s,%s,%s
+ae2stuff.wireless.tool.bound2=Clique em outro Conector Sem Fio para Conectá-lo
+ae2stuff.wireless.tool.connected=Conectado a %s,%s,%s
+ae2stuff.wireless.tool.failed=Falha na Conexão
+ae2stuff.wireless.tool.dimension=Ambos os conectores devem estar na mesma dimensão
+ae2stuff.wireless.tool.noexist=Conector ligado não existe
+ae2stuff.wireless.tool.security.network=Violação de segurança - Essas redes não podem se conectar
+ae2stuff.wireless.tool.security.player=Violação de segurança - Você não tem permissão para modificar essa rede
+ae2stuff.wireless.tool.targethubfull=Esta Central está lotada
+ae2stuff.wireless.tool.twohubs=Não se pode conectar duas centrais
+
+ae2stuff.wireless.advtool.queueing=§aModo de Seleção
+ae2stuff.wireless.advtool.binding=§aModo de Conexão
+ae2stuff.wireless.advtool.queueing.activated=Modo de seleção ativado
+ae2stuff.wireless.advtool.binding.activated=Modo de ligação ativado
+ae2stuff.wireless.advtool.queued=Conector localizado em %s,%s,%s adicionado à fila
+ae2stuff.wireless.advtool.queuederror=Este conector já está na fila
+ae2stuff.wireless.advtool.queueing.empty=Clique em Conectores Sem Fio para adicioná-los à fila de conexão
+ae2stuff.wireless.advtool.binding.empty=Mude para o Modo de Seleção para adicionar Conectores à fila
+ae2stuff.wireless.advtool.queueing.notempty=Conectores selecionados:
+ae2stuff.wireless.advtool.binding.notempty=Conectores aguardando conexão:
+ae2stuff.wireless.advtool.connector.next=Próximo conector na fila: %s,%s,%s
+ae2stuff.wireless.advtool.extra=§oUse o botão direito enquando agachado para trocar entre os Modos de Conexão e Seleção
+ae2stuff.wireless.advtool.noconnectors=Nenhum conector na fila. Tente trocar para o Modo de Seleção para adicionar alguns
+ae2stuff.wireless.advtool.pop=%s,%s,%s removido da fila
+ae2stuff.wireless.advtool.hub.queued=%s canais da Central adicionados à fila
+ae2stuff.wireless.advtool.queueing.clear=Fila limpa
+ae2stuff.wireless.tooltips.advtool.queueing.clear=Shift + %s + Botão Direito do Mouse para limpar a fila
+ae2stuff.wireless.tooltips.advtool.hubqols.binding=%s + Botão Direito do Mouse para conectar a todos os canais disponíveis do concentrador
+ae2stuff.wireless.tooltips.advtool.hubqols.queueing=%s + Botão Direito do Mouse para adicionar todos os canais disponíveis do concentrador à fila
+
+ae2stuff.visualiser.bound=Visualizando a rede em %s,%s,%s
+ae2stuff.visualiser.mode=Modo:
+ae2stuff.visualiser.set=Modo Trocado para %s
+ae2stuff.visualiser.mode.full=Mostrar Tudo
+ae2stuff.visualiser.mode.nodes=Mostrar Nódulos
+ae2stuff.visualiser.mode.channels=Mostrar Canais
+ae2stuff.visualiser.mode.nonum=Mostrar Canais e Nódulos
+ae2stuff.visualiser.mode.p2p=Mostrar Links P2P
 
 itemGroup.bdew.ae2stuff=AE2 Stuff Unofficial
