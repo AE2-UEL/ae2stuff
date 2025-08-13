@@ -260,7 +260,8 @@ class TileInscriber extends TileDataSlots with GridTile with SidedInventory with
     }
 
     val startingItem = input.copy
-    val renamedItem = input.copy
+    startingItem.setCount(1)
+    val renamedItem = startingItem.copy
     val tag = Platform.openNbtData(renamedItem)
 
     val display = tag.getCompoundTag("display")
