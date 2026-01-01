@@ -113,9 +113,9 @@ object VisualiserOverlayRender extends WorldOverlayRenderer {
       val z1 = link.node1.z
       val z2 = link.node2.z
 
-      val cx = (x1 - x2) / (x1 + x2)
-      val cy = (y1 - y2) / (y1 + y2)
-      val cz = (z1 - z2) / (z1 + z2)
+      val cx = (x1 + x2) / 2
+      val cy = (y1 + y2) / 2
+      val cz = (z1 + z2) / 2
       val dist = player.getDistanceSq(cx, cy, cz).toFloat
 
       val lineWidth = clamp(MathHelper.fastInvSqrt(dist) + (width.toInt >> 2), 1, width.toInt)
